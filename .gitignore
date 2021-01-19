@@ -1,0 +1,9 @@
+*.pyc
+__pycache__
+static_root/
+db.sqlite3
+*swp
+build/
+*.egg-info/
+dist/
+todo.txt

@@ -1,0 +1,11 @@
+{% extends 'notifications/view_notifications.html' %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="text" class="u-full-width"></textarea>
+        <input type="submit" value="Send" class="u-full-width" />
+    </form>
+    <hr>
+    {{ block.super }}
+{% endblock content %}

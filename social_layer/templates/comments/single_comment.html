@@ -1,0 +1,17 @@
+<div class="{% if comment.reply_to %}reply-comment{% endif %} comment">
+    <b class="em06">{{ comment.author.nick }}</b>
+    <span style="color: gray; font-size: 0.6em; width:100%;">{{ comment.date_time }}</span><br>
+    <div class="u-full-width">
+        {% if comment.author.picture.media_thumbnail %}
+            <img src="{{ comment.author.picture.media_thumbnail.url }}" 
+                class="comment-user-pic"/>
+        {% else %}
+            <i class="fa fa-user gray"></i>
+        {% endif %}
+        {{ comment.text }}
+    </div>
+    {% if comment.get_replies %}
+        <i class="fas fa-sort-down em06"></i>
+        ({{ comment.get_replies.count }})
+    {% endif %}
+</div>

@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-21 12:23-0300\n"
+"PO-Revision-Date: 2020-11-21 12:23-0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.1\n"
+
+#: social_layer/templates/comments/comment_section.html:20
+#: social_layer/templates/social_profile/profile.html:37
+msgid "Comments"
+msgstr "Comentários"
+
+#: social_layer/templates/comments/comment_section.html:25
+msgid "Leave a comment"
+msgstr "Deixe um comentário"
+
+#: social_layer/templates/comments/comment_section.html:28
+#: social_layer/templates/comments/comment_section.html:40
+msgid "send"
+msgstr "enviar"
+
+#: social_layer/templates/comments/comment_section.html:43
+msgid "show more comments"
+msgstr "mostrar mais comentários"
+
+#: social_layer/templates/comments/render_comment.html:33
+msgid "reply"
+msgstr "responder"
+
+#: social_layer/templates/comments/render_comment.html:41
+msgid "remove comment"
+msgstr "remover comentário"
+
+#: social_layer/templates/notifications/view_notifications.html:5
+#: social_layer/templates/notifications/view_notifications.html:22
+msgid "Notifications"
+msgstr "Notificações"
+
+#: social_layer/templates/notifications/view_notifications.html:32
+msgid "You may get messages here. You don't have any notification yet."
+msgstr "Você pode receber mensagens aqui. Ainda não há nenhuma."
+
+#: social_layer/templates/social_profile/list_profiles.html:6
+#: social_layer/templates/social_profile/list_profiles.html:11
+msgid "Community"
+msgstr "Comunidade"
+
+#: social_layer/templates/social_profile/profile.html:9
+msgid "edit"
+msgstr "editar"
+
+#: social_layer/templates/social_profile/profile.html:27
+msgid "Ads"
+msgstr "Anúncios"
+
+#: social_layer/templates/social_profile/setup_profile.html:10
+msgid "Your Profile"
+msgstr "Seu perfil"
+
+#: social_layer/templates/social_profile/setup_profile.html:13
+msgid "Nick"
+msgstr "Apelido"
+
+#: social_layer/templates/social_profile/setup_profile.html:16
+msgid "Select a picture"
+msgstr "Selecione uma foto"
+
+#: social_layer/templates/social_profile/setup_profile.html:19
+msgid "Phrase"
+msgstr "Frase"
+
+#: social_layer/templates/social_profile/setup_profile.html:24
+msgid "send me email about news and updates"
+msgstr "me envie emails sobre notícias e promoções"
+
+#: social_layer/templates/social_profile/setup_profile.html:26
+msgid "save"
+msgstr "gravar"
+
+#: social_layer/views/comments.py:37 social_layer/views/comments.py:65
+msgid "wrote a comment"
+msgstr "escreveu um comentário"

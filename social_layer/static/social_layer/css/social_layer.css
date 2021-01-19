@@ -1,0 +1,24 @@
+
+.comments-container{
+    width: 100%;
+    text-overflow: break;
+}
+.comment-textarea{
+    padding-right: 10px;
+    width: 100%;
+}
+.comment{
+  border-bottom: 1px solid #cccccc;
+}
+.reply-comment{
+    margin-left: 2em; 
+}
+.em06{
+    font-size: 0.6em;
+}
+
+.comment-user-pic {
+    height:2em;
+    width: 2em;
+    object-fit: contain;
+}
