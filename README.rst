@@ -73,6 +73,7 @@ Now inside a view, lets add a commennt section for the page:
 To finish, add this to the template:
 
 .. code:: html
+
     {% load static %}
     <script defer application="javascript" src="{% static 'social_layer/js/social_layer.js' %}"></script>
     <link rel="stylesheet" href="{% static 'social_layer/css/social_layer.css' %}"/>
@@ -80,3 +81,5 @@ To finish, add this to the template:
     <p>A comment section will render below.</p>
     {% include 'comments/comment_section.html' %}
 
+
+Hope it can be useful to you.
