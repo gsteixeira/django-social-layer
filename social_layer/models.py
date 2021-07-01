@@ -21,7 +21,6 @@ from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 from mediautils.models import Media
-# Create your models here.
 
 #### Social Profile
 class SocialProfile(models.Model):
@@ -66,6 +65,7 @@ class SocialProfilePhoto(Media):
 class CommentSection(models.Model):
     owner = models.ForeignKey('social_layer.SocialProfile',
                               related_name='comment_section_owner',
+                              null=True, blank=True,
                               on_delete=models.CASCADE)
     url = models.TextField(null=True, blank=True)
    

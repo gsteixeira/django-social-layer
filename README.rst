@@ -53,12 +53,11 @@ Create a SocialProfile for an user:
 
 Create a CommentSection for any purpose. It can, for example, be linked to an \
 object with a ForeignKey field, or to a view by it's URL. In our example we will \
-use an url, but it's optional. A CommentSection must have an owner.
+use an url, but it's optional. A CommentSection optionally can have an owner.
 
 .. code:: python
 
-    comment_section = CommentSection.objects.create(owner=social_bob,
-                                                    url=request.path)
+    comment_section = CommentSection.objects.create(url=request.path)
 
 
 Now inside a view, lets add a commennt section for the page:

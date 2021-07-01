@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" 
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" 
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" 
+            href="http://getskeleton.com/dist/css/skeleton.css" />
+        <title>Second sample page</title>
+        <script defer application="javascript"
+            src="{% static 'social_layer/js/social_layer.js' %}"></script>
+        <link rel="stylesheet" 
+            href="{% static 'social_layer/css/social_layer.css' %}"/>
+    </head>
+    <body>
+        <h1>This is another sample page</h1>
+        <a href="{% url 'home_page' %}">first page</a>
+        <p>In egestas erat imperdiet sed euismod nisi porta. Quis enim lobortis scelerisque fermentum dui faucibus. Eu tincidunt tortor aliquam nulla facilisi cras fermentum odio eu. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Egestas integer eget aliquet nibh praesent tristique. Adipiscing enim eu turpis egestas pretium. Pretium aenean pharetra magna ac placerat vestibulum.</p>
+        <hr>
+        <p>More comments here.</p>
+        {% include 'comments/comment_section.html' %}
+    </body>
+</html>

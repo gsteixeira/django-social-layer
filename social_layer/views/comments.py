@@ -43,7 +43,9 @@ def comment_section(request, pk=None):
                                          comment_section=section,
                                          text=text,
                                          reply_to=reply_to)
-        parties = [section.owner.user]
+        parties = []
+        if section.owner:
+            parties.append(section.owner.user)
         if reply_to:
             jump_to = reply_to.pk
             parties.append(reply_to.author.user)
@@ -98,7 +100,9 @@ def reply_comment(request, pk):
                         '</a>',
                         text[0:10]+'...',]
         notif_text = ' '.join(message_list)
-        parties = [reply_to.author.user, section.owner.user]
+        parties = [reply_to.author.user,]
+        if section.owner:
+            parties.append(section.owner.user)
         notify_parties(parties, notif_text, do_not=[request.user])
         
         return redirect(comment_url)

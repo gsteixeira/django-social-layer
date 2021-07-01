@@ -34,16 +34,13 @@ def setup_profile(request):
     sprofile = get_social_profile(request)
     if SOCIAL_ALT_SETUP_PROFILE:
         # pass an alternative function if your app needs
-        # this should should None if excpets the normal behavior
+        # this should should None if expects the normal behavior
         response = execute_string(SOCIAL_ALT_SETUP_PROFILE, request)
         if response:
             return response
     if request.method == "POST":
         sprofile.nick = request.POST.get('nick', '')
         sprofile.phrase = request.POST.get('phrase', '')
-        #files = request.FILES.getlist('picture')
-        #print('FILES', files)
-        
         for upload_file in request.FILES:
             foto = handle_upload_file(file_post=request.FILES[upload_file],
                                         quality=2,
@@ -78,7 +75,6 @@ def view_profile(request, pk):
         response = execute_string(SOCIAL_ALT_VIEW_PROFILE, request, sprofile)
         if response:
             return response
-    # aqrui funcao alternativa
     data = {
         'sprofile': sprofile,
         'comments': Comment.objects.filter(author=sprofile)
@@ -95,7 +91,6 @@ def social_login(request):
     It will redirect the user to the 'social' login page.
     """
     next_url = request.GET.get('next', '/')
-    #print(next_url)
     resp = redirect('/'+settings.SOCIAL_VISITOR_LOGIN)
     resp.set_cookie('slogin_next', next_url, expires=360) 
     return resp
