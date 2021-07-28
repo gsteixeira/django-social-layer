@@ -65,10 +65,10 @@ Now inside a view, lets add a commennt section for the page:
 .. code:: python
 
     def some_awesome_view(request):
-        # in our example, we use the url to match the page.
-        comment_section = CommentSection.objects.get(url=request.path)
-        data = {'comment_section': comment_section}
-        return render(request, 'awesome_template.html', data)
+        # in this example, we'll use the url to match the page.
+        cmt_section, n  = CommentSection.objects.get_or_create(url=request.path)
+        return render(request, 'awesome_template.html',
+                      {'comment_section': cmt_section})
 
 To finish, add this to the template:
 
@@ -78,8 +78,8 @@ To finish, add this to the template:
     <script defer application="javascript" src="{% static 'social_layer/js/social_layer.js' %}"></script>
     <link rel="stylesheet" href="{% static 'social_layer/css/social_layer.css' %}"/>
     ...
-    <p>A comment section will render below.</p>
+    <p>The comment section will render below.</p>
     {% include 'comments/comment_section.html' %}
 
 
-Hope it can be useful to you.
+Hope this can be useful to you.

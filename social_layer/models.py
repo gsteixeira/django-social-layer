@@ -21,9 +21,11 @@ from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 from mediautils.models import Media
+from social_layer.settings import MAX_FEATURED_COMMENTS
 
 #### Social Profile
 class SocialProfile(models.Model):
+    """ the Social media Profile object for the user to show online """
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     nick = models.CharField(max_length=64, null=True, blank=True)
     phrase = models.CharField(max_length=256, null=True, blank=True)
@@ -38,6 +40,8 @@ class SocialProfile(models.Model):
                                            null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        """ the save takes care of setting up a nickname and fix string sizes
+        """
         if not self.nick:
             if '@' in self.user.username:
                 self.nick = self.user.username.split('@')[0]
@@ -50,24 +54,33 @@ class SocialProfile(models.Model):
         super(SocialProfile, self).save(*args, **kwargs)
 
     def picture(self):
+        """ return the profile thumbnail """
         if not hasattr(self, 'cached_profoto'):
             self.cached_profoto = SocialProfilePhoto.objects.filter(
                                                     profile=self).last()
         return self.cached_profoto
 
     def get_url(self):
+        """ get the url to the profilepage """
         return reverse('social_layer:view_profile', kwargs={'pk':self.pk})
     
 class SocialProfilePhoto(Media):
+    """ picture used by the SocialProfile.picture
+    """
     profile = models.ForeignKey(SocialProfile, on_delete=models.CASCADE)
 
-#### Comments
+### Comments
 class CommentSection(models.Model):
+    """ A comment section can be added to any page.
+    It optionally is tied to a url. But also can be refered by its id.
+    the owner is also optional. If is not None, the owner will get a
+    notification when someone makes a new comment.
+    """
+    url = models.TextField(null=True, blank=True)
     owner = models.ForeignKey('social_layer.SocialProfile',
                               related_name='comment_section_owner',
                               null=True, blank=True,
                               on_delete=models.CASCADE)
-    url = models.TextField(null=True, blank=True)
    
     comments_enabled = models.BooleanField(default=True)
     owner_can_delete = models.BooleanField(default=False)
@@ -81,6 +94,7 @@ class CommentSection(models.Model):
     cached_featured = models.TextField(blank=True, default="")
     
     def get_url(self):
+        """ return the parent url of the comment or the default view """
         if self.url:
             return self.url
         else:
@@ -88,21 +102,27 @@ class CommentSection(models.Model):
                            kwargs={'pk':self.pk})
 
     def get_comments(self):
+        """ return comments from this comment section
+        You can limit the amount of comments with the 'featured' flag.
+        If True, only a number of MAX_FEATURED_COMMENTS (defaults to 3) will be
+        rendered on screen.
+        """
         featured = getattr(self, 'featured', False)
         comment_list = Comment.objects.filter(comment_section=self,
                                               reply_to=None)
         if featured:
-            MAX_FEATURED_COMMENTS = 3
             return comment_list[0:MAX_FEATURED_COMMENTS]
         else:
             return comment_list
     
     def get_featured_comments(self):
-        MAX_FEATURED_COMMENTS = 3
+        """ get a limited number of comments, defined by MAX_FEATURED_COMMENTS
+        """
         return self.get_comments()[0:MAX_FEATURED_COMMENTS]
 
 
 class Comment(models.Model):
+    """ the Comment object """
     comment_section = models.ForeignKey('social_layer.CommentSection',
                                         related_name='comment_section',
                                         on_delete=models.CASCADE)
@@ -125,6 +145,8 @@ class Comment(models.Model):
         ordering = ['-date_time']
 
     def save(self, *args, **kwargs):
+        """ the save method prevents repeated comments and crops the text.
+        """
         if self.text:
             self.text = self.text.replace('\n', ' ')[0:512]
             other = Comment.objects.exclude(pk=self.pk
@@ -152,8 +174,9 @@ class Comment(models.Model):
         self.count_replies = Comment.objects.filter(reply_to=self).count()
         self.save()
 
-#### Notifications
+### Notifications
 class Notification(models.Model):
+    """ Notification object, people get notified of social interactions """
     to = models.ForeignKey('auth.User',
                            related_name='notification_to',
                            on_delete=models.CASCADE)
@@ -169,8 +192,11 @@ class Notification(models.Model):
         if not other.exists():
             super(Notification, self).save(*args, **kwargs)
 
-#### Likes
+### Likes
 class LikeComment(models.Model):
+    """ an object that records when someone hits the Like button. It also
+    represents the Dislike action.
+    """
     user = models.ForeignKey('auth.User', related_name='likecomment_user',
                              on_delete=models.CASCADE)
     comment = models.ForeignKey('social_layer.Comment', 
@@ -179,4 +205,4 @@ class LikeComment(models.Model):
     like = models.BooleanField(default=True)
     date_time = models.DateTimeField(default=timezone.localtime)
 
-#### Friendships
+### Friendships

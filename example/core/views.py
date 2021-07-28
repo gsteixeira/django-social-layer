@@ -3,13 +3,16 @@ from social_layer.models import CommentSection
 # Create your views here.
 
 def home_page(request):
-    """  """
+    """ a sample homepage with comment section """
     comments, new = CommentSection.objects.get_or_create(url=request.path)
-    data = {'comment_section': comments,}
-    return render(request, 'example/home_page.html', data)
+    return render(request,
+                  'example/home_page.html',
+                  {'comment_section': comments,})
 
 
 def second_page(request):
+    """ a sample secondary page with comment section """
     comments, new = CommentSection.objects.get_or_create(url=request.path)
-    data = {'comment_section': comments,}
-    return render(request, 'example/second_page.html', data)
+    return render(request,
+                  'example/second_page.html',
+                  {'comment_section': comments,})
