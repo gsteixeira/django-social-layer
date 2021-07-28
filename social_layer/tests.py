@@ -31,8 +31,11 @@ random_stuff = uuid4().hex
 
 @override_settings(MEDIA_ROOT='/tmp/media_teste{}/'.format(random_stuff))
 class SocialLayerTestCase(TestCase):
-
+    """ Test Cases for the Social Media application.
+    currently covering around 80% of the code.
+    """
     def setUp(self):
+        """ create two users and a comment section """
         super(SocialLayerTestCase, self).setUp()
         self.bob = User.objects.create(username='Bob')
         self.alice = User.objects.create(username='Alice')
@@ -44,9 +47,11 @@ class SocialLayerTestCase(TestCase):
                                                     owner=self.alice_sprofile)
 
     def tearDown(self):
+        """ removes created files """
         shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
 
     def test_write_comment(self):
+        """ Bob writes a comment at Alice's page. """
         client = Client()
         client.force_login(self.bob)
         section = CommentSection.objects.create(owner=self.alice_sprofile)
@@ -62,6 +67,7 @@ class SocialLayerTestCase(TestCase):
         self.assertFalse(notif.read)
         
     def test_comments_and_replies(self):
+        """ Bob and Alice comments at each other's comments. """
         section = CommentSection.objects.create(owner=self.alice_sprofile)
         messages = []
         for user in [self.bob, self.alice]:
@@ -88,7 +94,7 @@ class SocialLayerTestCase(TestCase):
             self.assertIn(msg, str(response.content))
 
     def test_repeat_comment(self):
-        """ checks if a comment cant be made twice """
+        """ Ensures that a comment can't be made twice """
         client = Client()
         client.force_login(self.bob)
         section = CommentSection.objects.create(owner=self.alice_sprofile)
@@ -108,6 +114,7 @@ class SocialLayerTestCase(TestCase):
         self.assertFalse(notifs[0].read)
 
     def test_community(self):
+        """ test the list profiles view """
         client = Client()
         client.force_login(self.bob)
         response = client.get(reverse('social_layer:list_profiles'))
@@ -115,6 +122,7 @@ class SocialLayerTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         
     def test_view_profile(self):
+        """ test the profile page """
         client = Client()
         client.force_login(self.bob)
         response = client.get(self.alice_sprofile.get_url())
@@ -123,6 +131,7 @@ class SocialLayerTestCase(TestCase):
         
        
     def test_setup_profile(self):
+        """ check the profile setup page """
         client = Client()
         client.force_login(self.bob)
         url = reverse('social_layer:setup_profile')
@@ -140,6 +149,7 @@ class SocialLayerTestCase(TestCase):
         self.assertEqual(self.bob_sprofile.phrase, post_data['phrase'])
 
     def test_setup_profile_not_optin(self):
+        """ test user consent to receive emails """
         client = Client()
         client.force_login(self.bob)
         url = reverse('social_layer:setup_profile')
@@ -157,11 +167,13 @@ class SocialLayerTestCase(TestCase):
         self.assertEqual(self.bob_sprofile.phrase, post_data['phrase'])
         
     def test_social_login(self):
+        """ test the login page defined in SOCIAL_VISITOR_LOGIN """
         client = Client()
         response = client.get(reverse('social_layer:social_login'), follow=True)
         self.assertEqual('/'+settings.SOCIAL_VISITOR_LOGIN, response.redirect_chain[0][0])
         
     def test_see_notifications(self):
+        """ test the notifications page """
         self.test_write_comment()
         client = Client()
         client.force_login(self.alice)
@@ -172,6 +184,7 @@ class SocialLayerTestCase(TestCase):
         self.assertTrue(notif.read)
 
     def test_like_comment(self):
+        """ Hit the like button """
         self.test_write_comment()
         client = Client()
         client.force_login(self.alice)
@@ -188,6 +201,7 @@ class SocialLayerTestCase(TestCase):
         
 
     def test_dislike_comment(self):
+        """ Hit the dislike button """
         self.test_write_comment()
         client = Client()
         client.force_login(self.alice)
