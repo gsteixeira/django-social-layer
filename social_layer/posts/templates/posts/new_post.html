@@ -1,0 +1,14 @@
+{% extends 'social_layer/base.html' %}
+{% load i18n %}
+
+{% block header%}
+    {{ block.super }}
+    <title>{% trans 'Write a post' %}</title>
+{% endblock header%}
+
+{% block content %}
+
+    <h1>{% trans 'Write a post' %}</h1>
+    <table>{{ form.as_table() }}</table>
+    
+{% endblock content %}

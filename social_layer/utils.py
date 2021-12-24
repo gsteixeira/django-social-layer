@@ -14,7 +14,7 @@
 #    along with django-social-layer. If not, see <http://www.gnu.org/licenses/>.
 
 from importlib import import_module
-from social_layer.models import SocialProfile, SocialProfilePhoto
+from social_layer.profiles.models import SocialProfile, SocialProfilePhoto
 
 def get_social_profile_byuser(user):
     """ returns a SocialProfile object given an user """

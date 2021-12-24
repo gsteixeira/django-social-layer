@@ -1,0 +1,11 @@
+
+.profile {
+    display: table;
+}
+.profile-pic {
+    height: 30vh;
+    width: auto;
+}
+.profile-data {
+    display: table-row;
+}

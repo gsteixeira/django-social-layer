@@ -1,0 +1,37 @@
+{% extends "social_layer/base.html" %}
+{% load i18n %}
+
+{% block header %}
+    <title>{% trans 'Notifications' %}</title>
+    <meta name='robots' content='noindex, nofollow'>
+    <style>
+        .notification{
+            box-sizing: border-box;
+            width: 100%;
+            border: solid #5B6DCD 1px;
+            padding: 1em;
+            margin-bottom: 0.5em;
+        }
+        .unread {
+            background-color: beige;
+        }
+    </style>
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <h1>{% trans 'Notifications' %}</h1>
+    <div class="full-width">
+        {% if list_notif %}
+            {% for notif in list_notif %}
+                <div class="notification {% if not notif.read %}unread{% endif %}">
+                    {{ notif.date_time }}<br>
+                    {{ notif.text|safe }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>{% trans "You may get messages here. You don't have any notification yet." %}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

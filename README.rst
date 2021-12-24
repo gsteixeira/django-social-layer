@@ -9,6 +9,7 @@ FEATURES
     - users can like comments
     - notifications
     - users have profile page
+    - New: users now can post content, images, videos, etc.
 
 
 INSTALATION
@@ -24,32 +25,30 @@ Add to urls.py:
 
 .. code:: python
 
-    path('', include(('social_layer.urls', 'social_layer'), namespace="social_layer"))
+        path('', include(('social_layer.urls', 'social_layer'), namespace="social_layer"))
 
 add to settings.py:
 
 .. code:: python
 
        INSTALLED_APPS = [
-           ...
-           'social_layer',
+           # ...
+           'social_layer.apps.SocialLayerConfig',
        ]
+
+       # the login url to redirect site visitors to a social account.
+       # Note that you need to take care of auth and user registration.
+       SOCIAL_VISITOR_LOGIN = '/login/'
 
 run migrations:
 
 .. code:: shell
 
-       ./manage.py migrate social_layer
+       ./manage.py migrate
 
 
 USAGE
 -----
-Create a SocialProfile for an user:
-
-.. code:: python
-
-    bob = User.objects.create(username="bob")
-    social_bob = SocialProfile.objects.create(user=bob)
 
 Create a CommentSection for any purpose. It can, for example, be linked to an \
 object with a ForeignKey field, or to a view by it's URL. In our example we will \
@@ -57,17 +56,18 @@ use an url, but it's optional. A CommentSection optionally can have an owner.
 
 .. code:: python
 
+    from social_layer.comments.models import CommentSection
     comment_section = CommentSection.objects.create(url=request.path)
-
 
 Now inside a view, lets add a commennt section for the page:
 
 .. code:: python
 
-    def some_awesome_view(request):
+    from social_layer.comments.models import CommentSection
+    def my_view(request):
         # in this example, we'll use the url to match the page.
         cmt_section, n  = CommentSection.objects.get_or_create(url=request.path)
-        return render(request, 'awesome_template.html',
+        return render(request, 'my_view.html',
                       {'comment_section': cmt_section})
 
 To finish, add this to the template:
@@ -79,7 +79,17 @@ To finish, add this to the template:
     <link rel="stylesheet" href="{% static 'social_layer/css/social_layer.css' %}"/>
     ...
     <p>The comment section will render below.</p>
-    {% include 'comments/comment_section.html' %}
+    {% include 'social_layer/comments/comment_section.html' %}
+
+
+
+Get and create a SocialProfile for an authenticated user:
+
+.. code:: python
+
+    from social_layer.utils import get_social_profile
+    def my_view(request):
+        profile = get_social_profile(request)
 
 
 Hope this can be useful to you.

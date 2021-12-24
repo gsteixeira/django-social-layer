@@ -1,0 +1,11 @@
+{% extends 'social_layer/notifications/view_notifications.html' %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="text" class="full-width"></textarea>
+        <input type="submit" value="Send" class="full-width" />
+    </form>
+    <hr>
+    {{ block.super }}
+{% endblock content %}

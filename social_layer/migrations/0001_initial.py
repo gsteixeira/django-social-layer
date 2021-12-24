@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import mediautils.models
+import social_layer.mediautils.models
 
 
 class Migration(migrations.Migration):
@@ -47,8 +47,8 @@ class Migration(migrations.Migration):
             name='SocialProfilePhoto',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('media_file', models.FileField(max_length=10485760, upload_to=mediautils.models.choose_upload_media_to)),
-                ('media_thumbnail', models.FileField(blank=True, max_length=10485760, null=True, upload_to=mediautils.models.choose_upload_media_thumb_to)),
+                ('media_file', models.FileField(max_length=10485760, upload_to=social_layer.mediautils.models.choose_upload_media_to)),
+                ('media_thumbnail', models.FileField(blank=True, max_length=10485760, null=True, upload_to=social_layer.mediautils.models.choose_upload_media_thumb_to)),
                 ('content_type', models.CharField(blank=True, max_length=127, null=True)),
                 ('orientation', models.CharField(default='portrait', max_length=10)),
                 ('format_tries', models.IntegerField(default=0)),

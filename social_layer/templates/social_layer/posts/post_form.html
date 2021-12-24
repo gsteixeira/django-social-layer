@@ -1,0 +1,8 @@
+
+{% load i18n %}
+<form method="POST" action="{% url 'social_layer:new_post' %}" 
+        enctype="multipart/form-data" class="sl-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="publish" class="comment-button" />
+</form>

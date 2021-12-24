@@ -1,0 +1,44 @@
+
+{% load i18n %}
+{% if comment_section %}
+    <div class="comments-container">
+        {% if request.user.is_authenticated %}
+            <form method="POST"
+                action="{% url 'social_layer:comment_section' comment_section.id %}">
+                {% csrf_token %}
+        {% endif %}
+                <a href="{{ comment_section.owner.get_url }}" class="float-right">
+                    {{ comment_section.owner.nick }}
+                    {% if comment_section.owner.picture.media_thumbnail %}
+                        <img src="{{ comment_section.owner.picture.media_thumbnail.url }}"
+                            alt="{{ comment_section.owner.nick }}"
+                            class="comment-user-pic"/>
+                    {% else %}
+                        <i class="fa fa-user gray"></i>
+                    {% endif %}
+                </a>
+<!--                 <label>{% trans 'Comments' %}</label> -->
+                <textarea class="comment-textarea" name="text" id="text" value=""
+                    required
+                    {% if not request.user.is_authenticated %}
+                        onfocus="javascript:log_2join(this, '{% url 'social_layer:social_login' %}');"
+                    {% endif %}
+                    placeholder="{% trans 'Leave a comment' %}"></textarea>
+        {% if request.user.is_authenticated %}
+                <input type="submit" class="comment-button" value="{% trans 'send' %}"/>
+            </form>
+        {% else %}
+            <a href="{% url 'social_layer:social_login' %}" class="alink"
+                title="{% trans 'login or register to post comments' %}">
+                {% trans 'login or register to post comments' %}
+            </a>
+        {% endif %}
+        {% for comment in comment_section.get_comments %}
+            {% include 'social_layer/comments/render_comment.html' %}
+        {% endfor %}
+        {% include 'social_layer/comments/reply_mod.html' %}
+        {% if comment_section.featured and comment_section.get_comments > 3 %}
+            <a href="?show-comments">{% trans 'show more comments' %}</a>
+        {% endif %}
+    </div>
+{% endif %}

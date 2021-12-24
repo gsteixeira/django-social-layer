@@ -1,0 +1,11 @@
+<div class="comment">
+    <div class="comment-header">
+        <a href="{{ comment.comment_section.get_url }}?show-comments#comment_{{ comment.id }}"
+                rel="nofollow">
+            <span class="sl-datetime">{{ comment.date_time }}</span><br>
+        </a>
+    </div>
+    <div class="comment-body">
+        <div class="comment-text">{{ comment.text }}</div>
+    </div>
+</div>

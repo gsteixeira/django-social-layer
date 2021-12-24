@@ -1,0 +1,23 @@
+{% extends 'example/base.html' %}
+
+{% block header %}
+    {{ block.super }}
+    <title>Register your accout</title>
+{% endblock header %}
+
+{% block content %}
+    <h1>This is a sample page</h1>
+    {% include 'example/menu.html' %}
+    <p>Create your account here.</p>
+    <hr>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="username">Username</label>
+        <input id="username" type="text" name="username" />
+        <br><br>
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" />
+        <br>
+        <input type="submit" value="register" />
+    </form>
+{% endblock content %}

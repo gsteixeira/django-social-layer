@@ -16,6 +16,8 @@
 from django.test import TestCase, Client
 ## Create your tests here.
 from uuid import uuid4
+from base64 import b64decode
+import os
 import random
 import shutil
 from django.conf import settings
@@ -24,12 +26,18 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.utils import override_settings
 ##
-from social_layer.models import (CommentSection, Comment, SocialProfile,
-                                 Notification, LikeComment)
+from social_layer.comments.models import (CommentSection,
+                                 Comment,
+                                 LikeComment)
+from social_layer.profiles.models import SocialProfile
+from social_layer.notifications.models import Notification
+from social_layer.posts.models import Post, PostMedia
+from social_layer.mediautils.tests import small_video, small_image
+from social_layer.tasks import format_medias
+import logging
 
-random_stuff = uuid4().hex
-
-@override_settings(MEDIA_ROOT='/tmp/media_teste{}/'.format(random_stuff))
+#@override_settings(LOGGING={})
+@override_settings(MEDIA_ROOT='/tmp/media_test_{}/'.format(uuid4().hex))
 class SocialLayerTestCase(TestCase):
     """ Test Cases for the Social Media application.
     currently covering around 80% of the code.
@@ -45,6 +53,8 @@ class SocialLayerTestCase(TestCase):
         
         self.comment_section = CommentSection.objects.create(
                                                     owner=self.alice_sprofile)
+        # disable logging
+        logging.disable(logging.INFO)
 
     def tearDown(self):
         """ removes created files """
@@ -215,10 +225,155 @@ class SocialLayerTestCase(TestCase):
         comment.refresh_from_db()
         self.assertEqual(comment.count_likes, 0)
         self.assertEqual(comment.count_dislikes, 1)
-        
 
+    def test_set_profile_photo(self):
+        """ test setting up a profile picture """
+        client = Client()
+        client.force_login(self.bob)
+        post_data = {
+            'nick': 'Bob Tester',
+            'phrase': 'Testing this',
+            'receive_email': 'on',
+            'picture': SimpleUploadedFile("image.png", b64decode(small_image),
+                                        content_type="image/png"),
+            }
+        url = reverse('social_layer:setup_profile')
+        response = client.post(url, post_data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        format_medias()
+        self.bob_sprofile.refresh_from_db()
+        self.assertEqual(self.bob_sprofile.nick, post_data['nick'])
+        self.assertEqual(self.bob_sprofile.phrase, post_data['phrase'])
+        self.assertIsNotNone(self.bob_sprofile.picture())
+        self.assertTrue(os.path.isfile(self.bob_sprofile.picture().media_file.path))
+        self.assertTrue(os.path.isfile(self.bob_sprofile.picture().media_thumbnail.path))
+        self.assertEqual(self.bob_sprofile.picture().content_type, "image/png")
 
+    def test_delete_profile_photo(self):
+        self.test_set_profile_photo()
+        client = Client()
+        client.force_login(self.bob)
+        self.bob_sprofile.refresh_from_db()
+        pic = self.bob_sprofile.picture()
+        url = reverse('social_layer:delete_profile_photo')
+        response = client.get(url)
+        self.bob_sprofile._cached_profoto = None # force refresh
+        self.bob_sprofile.refresh_from_db()
+        self.assertIsNone(self.bob_sprofile.picture())
+        self.assertFalse(os.path.isfile(pic.media_file.path))
+        self.assertFalse(os.path.isfile(pic.media_thumbnail.path))
 
+    def test_task_photos(self):
+        self.test_set_profile_photo()
+        format_medias()
 
+    def test_set_video_as_photo(self):
+        """ test setting up a profile picture """
+        client = Client()
+        client.force_login(self.bob)
+        post_data = {
+            'nick': 'Bob Tester',
+            'phrase': 'Testing this',
+            'receive_email': 'on',
+            'picture': SimpleUploadedFile("video.mp4", b64decode(small_video),
+                                        content_type="video/mp4"),
+            }
+        url = reverse('social_layer:setup_profile')
+        response = client.post(url, post_data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.bob_sprofile.refresh_from_db()
+        format_medias()
+        self.assertEqual(self.bob_sprofile.nick, post_data['nick'])
+        self.assertEqual(self.bob_sprofile.phrase, post_data['phrase'])
+        self.assertIsNotNone(self.bob_sprofile.picture())
+        self.assertTrue(os.path.isfile(self.bob_sprofile.picture().media_file.path))
+        self.assertTrue(os.path.isfile(self.bob_sprofile.picture().media_thumbnail.path))
+        self.assertEqual(self.bob_sprofile.picture().content_type, "video/mp4")
 
+    # Posts
+    def test_write_post(self):
+        """ write a simple text post """
+        client = Client()
+        client.force_login(self.bob)
+        post_data = {
+            'text': 'gonna have a sandwich',
+        }
+        url = reverse('social_layer:new_post')
+        response = client.post(url, post_data, follow=True)
+        post = Post.objects.all().last()
+        self.assertEqual(post.text, post_data['text'])
+        self.assertIn(post_data['text'], str(response.content))
+        response = client.get(post.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(post_data['text'], str(response.content))
+
+    def test_delete_post(self):
+        """ """
+        self.test_write_post()
+        client = Client()
+        client.force_login(self.bob)
+        post = Post.objects.all().last()
+        client = Client()
+        client.force_login(self.bob)
+        url = reverse('social_layer:delete_post', kwargs={'pk': post.pk})
+        response = client.get(url)
+        self.assertIsNone(Post.objects.filter(pk=post.pk).last())
+
+    @override_settings(SOCIAL_ALLOW_MEDIA_POSTS=True)
+    def test_write_post_with_file(self):
+        """ write a post with media file """
+        from social_layer.posts.forms import PostForm
+        PostForm.allow_media = True # monkey_patch
+        client = Client()
+        client.force_login(self.bob)
+        post_data = {
+            'text': 'this is my cat',
+            'media': SimpleUploadedFile("cat.png", b64decode(small_image),
+                                        content_type="image/png"),
+        }
+        url = reverse('social_layer:new_post')
+        response = client.post(url, post_data, follow=True)
+        post = Post.objects.all().last()
+        self.assertEqual(post.text, post_data['text'])
+        self.assertIn(post_data['text'], str(response.content))
+        format_medias()
+        self.assertIsNotNone(post.postmedia)
+        post_media = post.postmedia
+        self.assertIn(post.postmedia.media_thumbnail.url, str(response.content))
+        self.assertIn('.webp', post.postmedia.media_thumbnail.url)
+        self.assertTrue(os.path.isfile(post.postmedia.media_thumbnail.path))
+        # delete_post
+        url = reverse('social_layer:delete_post', kwargs={'pk': post.pk})
+        response = client.get(url)
+        self.assertIsNone(Post.objects.filter(pk=post.pk).last())
+        self.assertIsNone(PostMedia.objects.filter(pk=post_media.pk).last())
+        self.assertFalse(os.path.isfile(post.postmedia.media_file.path))
+        self.assertFalse(os.path.isfile(post.postmedia.media_thumbnail.path))
     
+    @override_settings(SOCIAL_ALLOW_MEDIA_POSTS=False)
+    def test_write_post_with_file_denied(self):
+        """ write a post with media file, but its not allowed :( """
+        from social_layer.posts.forms import PostForm
+        PostForm.allow_media = False # monkey_patch
+        client = Client()
+        client.force_login(self.bob)
+        post_data = {
+            'text': 'this is my cat',
+            'media': SimpleUploadedFile("cat.png", b64decode(small_image),
+                                        content_type="image/png"),
+        }
+        url = reverse('social_layer:new_post')
+        self.assertIsNone(Post.objects.all().last())
+        response = client.post(url, post_data, follow=True)
+        post = Post.objects.all().last()
+        self.assertIsNotNone(post)
+        #self.assertIsNone(post.postmedia)
+
+    def test_write_post_empty(self):
+        """ write a empty post. not allowed :( """
+        client = Client()
+        client.force_login(self.bob)
+        response = client.post(reverse('social_layer:new_post'),
+                               {'text':''}, follow=True)
+        post = Post.objects.all().last()
+

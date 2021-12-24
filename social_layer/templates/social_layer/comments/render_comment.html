@@ -1,0 +1,67 @@
+{% load i18n %}
+<div class="{% if comment.reply_to %}reply-comment{% endif %} comment">
+    <div class="comment-header">
+        <a id="comment_{{ comment.id }}"></a>
+        <a href="{{comment.author.get_url }}" rel="nofollow">
+            <b>{{ comment.author.nick }}</b>
+        </a>
+        <span class="sl-datetime">{{ comment.date_time }}</span><br>
+    </div>
+    <div class="comment-body">
+        <div class="comment-avt">
+            <a href="{{comment.author.get_url }}" rel="nofollow">
+            {% if comment.author.picture.media_thumbnail %}
+                <img src="{{ comment.author.picture.media_thumbnail.url }}"
+                    alt="{{ comment.author.nick }}"
+                    class="comment-user-pic"/>
+            {% else %}
+                <i class="fa fa-user gray"></i>
+            {% endif %}
+            </a>
+        </div>
+        <div class="comment-text">{{ comment.text }}</div>
+    </div>
+    <div class="full-width sl-likes" >
+        <a href="javascript:sl_like('{% url 'social_layer:like_comment' comment.pk 'like' %}?ajx', 'like_{{comment.id}}');" >
+            <span id="like_{{ comment.pk }}" >{{ comment.count_likes|default:'' }}</span>
+            <i class="fas fa-thumbs-up"></i>
+        </a>
+        <a href="javascript:sl_like('{% url 'social_layer:like_comment' comment.pk 'dislike' %}?ajx', 'dislike_{{comment.id}}');" >
+            <span id="dislike_{{ comment.pk }}" >{{ comment.count_dislikes|default:'' }}</span>
+            <i class="fas fa-thumbs-down"></i>
+        </a>
+        {% if comment_section.featured and comment.get_replies %}
+                <a href="?show-comments#comment_{{comment.id}}"
+                    rel="nofollow">
+                    <i class="fas fa-sort-down"></i>
+                    ({{ comment.get_replies.count }})
+                </a>
+        {% endif %}
+        {#% if comment_section.anyone_can_reply or request.user == comment_section.owner.user or request.user == comment.author.user %#}
+            <a href="javascript: reply_to({{ comment.id }});" rel="nofollow" >
+                {% trans 'reply' %}
+            </a>
+
+        {% if request.user.is_authenticated %}
+            <form id="rt_form_{{comment.id}}" method="POST" style="display: none"
+                action="{% url 'social_layer:reply_comment' comment.id  %}"></form>
+        {% else %}
+            <div id="rt_form_{{comment.id}}" style="display: none"></div>
+        {% endif %}
+        
+        {% if not comment_section.featured and request.user == comment.author.user or request.user.is_superuser %}
+            <a href="{% url 'social_layer:delete_comment' comment.id %}"
+                rel="nofollow" class="float-right"
+                title="{% trans 'remove comment' %}">
+                <i class="fa fa-times"></i>
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% if not comment_section.featured %}
+    {% for reply in comment.get_replies %}
+        {% with reply as comment %}
+            {% include 'social_layer/comments/render_comment.html' %}
+        {% endwith %}
+    {% endfor %}
+{% endif %}

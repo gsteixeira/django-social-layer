@@ -1,0 +1,61 @@
+{% load i18n %}
+<div class="comment">
+    <div class="comment-header">
+        <a id="post_{{ post.id }}"></a>
+        <a href="{{post.owner.get_url }}" rel="nofollow">
+            <b>{{ post.owner.nick }}</b>
+        </a>
+        <a href="{{ post.get_url }}">
+            <span class="sl-datetime">{{ post.date_time }}</span>
+        </a>
+        <br>
+    </div>
+    <div class="comment-body">
+        <div class="comment-avt">
+            <a href="{{ post.owner.get_url }}" rel="nofollow">
+            {% if post.owner.picture.media_thumbnail %}
+                <img src="{{ post.owner.picture.media_thumbnail.url }}"
+                    alt="{{ post.owner.nick }}"
+                    class="comment-user-pic"/>
+            {% else %}
+                <i class="fa fa-user gray"></i>
+            {% endif %}
+            </a>
+        </div>
+        <div class="comment-text">
+            {{ post.text|linebreaks|default:'' }}
+            {% if post.postmedia and post.postmedia.media_thumbnail %}
+                {% if 'video/' in post.postmedia.content_type %}
+                    <video class="sl-post-img-{{ post.postmedia.orientation }}"
+                            id="video_player_{{post.id}}"
+                            {% if post.media_thumbnail %}
+                                poster="{{post.media_thumbnail.url}}"
+                            {% endif %}
+                            preload="metadata"
+                            onclick="this.play();"
+                            controls>
+                        <source src="{{ post.postmedia.media_file.url }}"
+                                type="{{ post.postmedia.content_type }}">
+                    </video>
+                {% elif 'audio/' in post.postmedia.content_type %}
+                    <video class="sl-post-img-{{ post.postmedia.orientation }}"
+                            id="audio_player_{{ post.postmedia }}"
+                            onclick="this.play();"
+                            preload="metadata"
+                            controls>
+                        <source src="{{ post.postmedia.media_file.url }}"
+                                type="{{ post.postmedia.content_type }}">
+                    </video>
+                {% else %}
+                    <a href="{{ post.get_url }}">
+                        <img src="{{ post.postmedia.media_thumbnail.url }}"
+                            class="sl-post-img-{{ post.postmedia.orientation }}"/>
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% with post.comments as comment_section %}
+            {% include 'social_layer/like_buttons.html' %}
+        {% endwith %}
+    </div>
+</div>

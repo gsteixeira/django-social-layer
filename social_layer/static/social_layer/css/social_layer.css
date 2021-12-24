@@ -1,24 +1,150 @@
+.sl-form p {
+  display: grid;
+}
 
-.comments-container{
+/* wraps the comment form */
+.comments-container {
     width: 100%;
     text-overflow: break;
 }
-.comment-textarea{
+
+/* its the textarea input where the comment is written on */
+.comment-textarea {
+    width: 100%;
+    height: 60px;
     padding-right: 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.comment-button {
+    padding: 10px 30px 10px 30px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #dddddd;
+    border-color: #888;
+}
+/* the comment wrapper in render_comment */
+.comment {
+    border-bottom: 1px solid #cccccc;
+    padding: 5px;
+    display: table;
     width: 100%;
 }
-.comment{
-  border-bottom: 1px solid #cccccc;
+
+.comment a {
+    text-decoration: none;
 }
+
+/* the area inside comment where the content is shown */
+.comment-header {
+    display: table-row;
+    text-align: left;
+}
+.comment-text {
+    padding-left: 10px;
+    display: table-cell;
+    width: 100%;
+}
+.comment-avt {
+    padding: 5px;
+    display: table-cell;
+    text-align: center;
+}
+
+.comment-header a {
+    color: #094185;
+}
+.comment-header a:visited {
+    color: #094185;
+}
+.comment-avt a {
+    color: #094185;
+}
+.comment-avt a:visited {
+    color: #094185;
+}
+
+.sl-post-img {
+    display: table-row;
+    margin: 0 auto;
+}
+
+.sl-post-img-landscape {
+    overflow: hidden;
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    height: auto;
+    border-radius: 0.5em;
+}
+
+.sl-post-img-portrait {
+    overflow: hidden;
+    display: block;
+    margin: 0 auto;
+    height: 70vh;
+    width: auto;
+    border-radius: 0.5em;
+}
+
+.sl-post-text {
+    padding-left: 10px;
+    display: table-cell;
+    width: 100%;
+}
+
 .reply-comment{
     margin-left: 2em; 
 }
-.em06{
-    font-size: 0.6em;
-}
 
 .comment-user-pic {
-    height:2em;
-    width: 2em;
+    height:30px;
+    width: 30px;
     object-fit: contain;
+}
+
+/* like buttons */
+.sl-likes {
+    font-size: 10px;
+/*     color: gray; */
+    padding: 5px;
+}
+
+.sl-likes a {
+    font-size: 10px;
+    color: gray;
+    text-decoration: none;
+    margin-left: 25px;
+}
+
+.sl-likes i {
+    font-size: 16px;
+    color: gray;
+    text-decoration: none;
+}
+
+/* date time shown on comments */
+.sl-datetime {
+    color: gray;
+    font-size: 0.6em;
+    width:100%;
+}
+
+.full-width {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.float-right {
+    float: right;
+}
+
+.float-left {
+    float: left;
+}
+
+.center {
+    text-align: center;
+    margin: 0 auto;
 }

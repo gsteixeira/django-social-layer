@@ -1,0 +1,16 @@
+<!--This is an example on how to override the basic (and ugly) default 
+    social social_layer template.
+    
+    What we will do here is extend the base template and load our local headers,
+-->
+
+{% extends 'example/base.html' %}
+
+{% block header %}
+    {{ block.super }}
+    <script application="javascript" src="/static/social_layer/js/social_layer.js"></script>
+    <link rel="stylesheet" href="/static/social_layer/css/social_layer.css"/>
+{% endblock header %}
+
+{% block content %}
+{% endblock content %}

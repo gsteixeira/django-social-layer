@@ -1,0 +1,10 @@
+{% load i18n %}
+<div id="reply-mod" style="display:none;">
+    {% csrf_token %}
+    <textarea class="comment-textarea" name="text" id="text" value=""
+            required
+            {% if not request.user.is_authenticated %}
+                onfocus="javascript:log_2join(this, '{% url 'social_layer:social_login' %}');"
+            {% endif %}></textarea>
+    <input type="submit" value="{% trans 'send' %}"/>
+</div>

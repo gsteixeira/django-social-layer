@@ -1,0 +1,20 @@
+{% extends 'social_layer/base.html' %}
+{% load i18n %}
+
+{% block header%}
+    {{ block.super }}
+{% endblock header%}
+
+{% block content %}
+    {% include 'social_layer/posts/local_view_post_top.html' %}
+    {% include 'social_layer/posts/render_post.html' %}
+    {% if request.user.is_authenticated and post.owner.user == request.user or request.user.is_staff %}
+        <a href="{% url 'social_layer:delete_post' post.id %}"
+            rel="nofollow" class="float-right"
+            title="{% trans 'delete post' %}">
+            <i class="fa fa-times"></i>
+            {% trans "delete" %}
+        </a>
+    {% endif %}
+    {% include 'social_layer/comments/comment_section.html' %}
+{% endblock content %}

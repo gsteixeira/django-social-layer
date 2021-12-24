@@ -1,0 +1,16 @@
+{% extends 'social_layer/base.html' %}
+{% load i18n %}
+
+{% block header%}
+    {{ block.super }}
+    {% include 'social_layer/posts/local_posts_feed_header.html' %}
+{% endblock header%}
+
+{% block content %}
+    {% include 'social_layer/posts/local_posts_feed_top.html' %}
+    {% include 'social_layer/posts/post_form.html' %}
+    {% for post in post_list %}
+        {% include 'social_layer/posts/render_post.html' %}
+    {% endfor %}
+    {% include 'social_layer/comments/reply_mod.html' %}
+{% endblock content %}

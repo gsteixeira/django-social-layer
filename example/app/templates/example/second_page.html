@@ -1,0 +1,16 @@
+{% extends 'example/base.html' %}
+
+{% block header %}
+        {{ block.super }}
+        <title>Second sample page</title>
+{% endblock header %}
+
+{% block content %}
+        <h1>This is another sample page</h1>
+        {% include 'example/menu.html' %}
+        <p>In egestas erat imperdiet sed euismod nisi porta. Quis enim lobortis scelerisque fermentum dui faucibus. Eu tincidunt tortor aliquam nulla facilisi cras fermentum odio eu. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Egestas integer eget aliquet nibh praesent tristique. Adipiscing enim eu turpis egestas pretium. Pretium aenean pharetra magna ac placerat vestibulum.</p>
+        <hr>
+        <p>More comments here.</p>
+        {% include 'social_layer/comments/comment_section.html' %}
+{% endblock content %}
+

@@ -1,0 +1,27 @@
+
+<article>
+    <div class="list-card">
+        <a href="{{ sprofile.get_url }}" rel="nofollow">
+            <div class="list-card-image">
+                {% if sprofile.picture.media_thumbnail %}
+                    <img src="{{ sprofile.picture.media_thumbnail.url }}" 
+                            width="140"
+                            height="160"
+                            class="contained-photo"
+                            style="object-fit: contain;"/>
+                {% else %}
+                    <i class="fa fa-user fa-4x gray"></i>
+                {% endif %}
+            </div>
+            <div class="list-card-content">
+                <div class="full-width center" style="top:0;">
+                    <h3 class="had"><b>{{ sprofile.nick }}</b></h3>
+                </div>
+                <div class="list-card-description">
+                    {{ item.phrase }}
+                </div>
+            </div>
+        </a>
+    <script type="application/ld+json">{{ item.get_ritch_snipet|safe }}</script>
+    </div>
+</article>

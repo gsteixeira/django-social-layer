@@ -1,0 +1,15 @@
+{% extends 'social_layer/base.html' %}
+{% load i18n %}
+
+{% block header%}
+    {{ block.super }}
+    <title>{% trans 'Community' %}</title>
+{% endblock header%}
+
+{% block content %}
+
+    <h1>{% trans 'Community' %}</h1>
+    {% for sprofile in list_profiles %}
+        {% include 'social_layer/profiles/card.html' %}
+    {% endfor %}
+{% endblock content %}

@@ -1,0 +1,57 @@
+{% extends 'social_layer/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block header %}
+    {{ block.super }}
+    <title>{{ sprofile.nick|default:'' }}</title>
+    <link rel="stylesheet" href="{% static '/social_layer/css/profile.css' %}"/>
+    <style>
+        .profile {
+            display: table;
+        }
+        .profile-pic {
+            height: 30vh;
+            width: auto;
+        }
+        .profile-data {
+            display: table-row;
+        }
+    </style>
+{% endblock header%}
+
+{% block content %}
+    {% include 'social_layer/profiles/local_profile_top.html' %}
+    {% if request.user.is_staff %}
+        <a href="{% url 'social_layer:admin_send_notification' sprofile.user.pk %}">
+            {% trans 'send notification' %}
+        </a>
+        <br>
+    {% endif %}
+    {% if request.user == sprofile.user %}
+        <a href="{% url 'social_layer:setup_profile' %}" rel="nofollow" class="float-right">
+            {% trans 'edit' %}
+        </a>
+        <br>
+    {% endif %}
+    <div class="center profile">
+        {% if sprofile.picture.media_thumbnail %}
+            <img src="{{ sprofile.picture.media_thumbnail.url }}" class="profile-pic"/>
+        {% else %}
+            <i class="fa fa-user fa-4x gray" class="profile-pic"></i>
+        {% endif %}
+        <span class="profile-data">{{ sprofile.nick|default:'' }}</span>
+        <span class="profile-data"><i>{{ sprofile.phrase|default:'' }}</i></span>
+    </div>
+    {% if comments %}
+    <div class="full-width center" >
+        <h2 class="hp">{% trans 'Comments' %}</h2>
+        {% for comment in comments %}
+      <!--      
+                {{ comment.comment_section.get_url }}
+            </a>-->
+            {% include 'social_layer/comments/single_comment.html' %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% include 'social_layer/comments/reply_mod.html' %}
+{% endblock content %}

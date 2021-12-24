@@ -1,0 +1,29 @@
+{% extends 'social_layer/base.html' %}
+{% load i18n %}
+
+
+
+{% block content %}
+    {% if sprofile.picture.media_thumbnail %}
+        <img src="{{ sprofile.picture.media_thumbnail.url }}" style="height: 30vh; width: auto;"/>
+    {% endif %}
+    <h1>{% trans "Your Profile" %}</h1>
+    <form method="POST" action="." enctype='multipart/form-data' class="full-width">
+        {% csrf_token %}
+        <label for="nick_id">{% trans 'Nick' %}</label>
+        <input type="text" name="nick" id="nick_id" value="{{ sprofile.nick|default:'' }}" class="full-width"/>
+        
+        <label for="picture_id">{% trans 'Select a picture' %}</label>
+        <input type="file" name="picture" id="picture_id" class="full-width"/>
+        {% if did_exist %}
+            <label for="phrase_id">{% trans 'Phrase' %}</label>
+            <textarea  type="text" name="phrase" id="phrase_id" class="full-width">{{ sprofile.phrase|default:'' }}</textarea>
+        {% endif %}
+        <!--<div class="full-width">
+            <input type="checkbox" name="receive_email" name="receive_email_id"/>
+            <label for="receive_email_id" >{% trans 'send me email about news and updates' %}</label>
+        </div>-->
+        <input type="submit" value="{% trans 'save' %}" class="full-width"/>
+    </form>
+
+{% endblock content %}
