@@ -22,10 +22,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
-      working-directory: example/app
+      working-directory: django-social-layer/example/app/
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Run Tests
       run: |
-        python manage.py test
+        python manage.py test social_layer
