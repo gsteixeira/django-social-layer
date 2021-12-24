@@ -24,9 +24,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install Django==3.2.10
-        pip install Pillow==8.4.0
-        pip install opencv-python==4.5.4.60
+        pip install djang-social-layer
     - name: Run Tests
       working-directory: example/app/
       run: |
