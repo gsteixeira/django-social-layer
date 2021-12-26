@@ -2,6 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
+from infscroll.utils import get_pagination
+from infscroll.views import more_items
+
 from social_layer.posts.forms import PostForm
 from social_layer.posts.models import Post, PostMedia
 from social_layer.utils import get_social_profile
@@ -32,15 +35,21 @@ def new_post(request):
 
 def posts_feed(request):
     """ The main list of posts """
-    form = PostForm()
-    # TODO pagination
     post_list = Post.objects.all().order_by('-id')
+    paginated = get_pagination(request, post_list)
     data = {
-        'post_list': post_list,
-        'form': form,
+        'more_posts_url': reverse('social_layer:more_posts'),
+        'form': PostForm(),
         }
+    data.update(paginated)
     return render(request, 'social_layer/posts/posts_feed.html', data)
 
+def more_posts(request):
+    """ dynamic load posts using the django-infinite-scroll module.
+    """
+    post_list = Post.objects.all().order_by('-id')
+    return more_items(request, post_list,
+                      template='social_layer/posts/more_posts.html')
 
 def view_post(request, pk, template='social_layer/posts/view_post.html'):
     """ The main list of posts """

@@ -9,7 +9,8 @@ RUN apt-get update && \
 RUN pip3 install Django==3.2.10 \
                  uwsgi==2.0.20 \
                  Pillow==8.4.0 \
-                 opencv-python==4.5.4.60
+                 opencv-python==4.5.4.60 \
+                 django-infinite-scroll==0.1.7
 
 COPY resources/uwsgi.ini /etc/
 

@@ -377,3 +377,13 @@ class SocialLayerTestCase(TestCase):
                                {'text':''}, follow=True)
         post = Post.objects.all().last()
 
+    def test_posts_feed_scroll(self):
+        """ test the view more_posts, used by infscroll module """
+        self.test_write_post()
+        client = Client()
+        post = Post.objects.all().last()
+        url = reverse('social_layer:more_posts')
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(post.text, str(response.content))
+

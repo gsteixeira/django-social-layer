@@ -34,6 +34,7 @@ add to settings.py:
        INSTALLED_APPS = [
            # ...
            'social_layer.apps.SocialLayerConfig',
+           'infscroll', # required
        ]
 
        # the login url to redirect site visitors to a social account.

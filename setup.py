@@ -24,7 +24,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-social-layer',
-    version='0.2.0',
+    version='0.2.1',
     packages=find_packages(),
     include_package_data=True,
     license='GNU License',  # example license
@@ -42,7 +42,8 @@ setup(
     install_requires=[
         'Django<=3.2.10',
         'Pillow<=8.4.0',
-        'opencv-python<=4.5.4.60'
+        'opencv-python<=4.5.4.60',
+        'django-infinite-scroll>=0.1.7',
         ],
     package_data={
         'social_layer': ['social_layer/migrations/*',]

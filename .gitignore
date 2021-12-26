@@ -1,4 +1,5 @@
 *.pyc
+media/
 __pycache__
 static_root/
 db.sqlite3
@@ -7,3 +8,5 @@ build/
 *.egg-info/
 dist/
 todo.txt
+.coverage
+

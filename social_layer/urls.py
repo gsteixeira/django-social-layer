@@ -66,6 +66,7 @@ urlpatterns = [
         #posts
         path('new-post/', social_layer.posts.views.new_post, name='new_post'),
         path('feed/', social_layer.posts.views.posts_feed, name='posts_feed'),
+        path('more-posts/', social_layer.posts.views.more_posts, name='more_posts'),
         path('post/<int:pk>/', social_layer.posts.views.view_post, name='view_post'),
         path('delete-post/<int:pk>/', social_layer.posts.views.delete_post, name='delete_post'),
         ]
