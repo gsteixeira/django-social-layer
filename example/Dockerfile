@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
     apt-get install -y build-essential python3-dev python3-pip \
-                       ffmpeg libwebp-dev 
+                       ffmpeg libwebp-dev git
     
 RUN pip3 install Django==3.2.10 \
                  uwsgi==2.0.20 \
@@ -16,7 +16,8 @@ COPY resources/uwsgi.ini /etc/
 
 ADD app/ /opt/example/
 
-RUN pip3 install --no-deps --upgrade django-social-layer
+RUN pip3 install --no-deps --upgrade \
+        git+https://github.com/gsteixeira/django-social-layer.git
 
 RUN cd /opt/example/ && \
     rm /opt/example/db/db.sqlite3 || true && \

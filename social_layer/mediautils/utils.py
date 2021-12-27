@@ -7,7 +7,8 @@ import os
 import sys
 import shutil
 import random
-from PIL import Image, ImageDraw, ImageFont
+from PIL import (Image, ImageDraw, ImageFont,
+                 ImageSequence, UnidentifiedImageError)
 
 from django.conf import settings
 import logging
@@ -115,40 +116,36 @@ def md5sum(filename, blocksize=65536):
     return hashe.hexdigest()
 
 
-def convert_tojpeg(arquivo_temp):
+def convert_tojpeg(tempo_file):
     """ convert image to jpeg """
     try:
-        img = Image.open(arquivo_temp)
+        img = Image.open(tempo_file)
         img = img.convert('RGBA')
         background = Image.new("RGBA", img.size, "WHITE")
         background.paste(img, (0, 0), img) 
         img = background.convert('RGB')
-        img.save(arquivo_temp, "JPEG", optimize=True, quality=80)
+        img.save(tempo_file, "JPEG", optimize=True, quality=80)
     except Exception as e:
         print('ERROR: convert_tojpeg', e)
         logger.error(e)
 
-def convert_towebp(arquivo_temp):
+def convert_towebp(tempo_file):
     """ convert image to webp
     requires libwebp-dev
     """
     try:
-        img = Image.open(arquivo_temp)
+        img = Image.open(tempo_file)
         img = img.convert('RGBA')
         background = Image.new("RGBA", img.size, "WHITE")
         background.paste(img, (0, 0), img) 
         img = background.convert('RGB')
-        img.save(arquivo_temp, "WEBP")
+        img.save(tempo_file, "WEBP")
     except Exception as e:
         logger.error(e)
 
 def handle_upload_file(file_post=None,
                      Model=None,
-                     #description=None,
-                     #title=None,
                      extra_args={},
-                     #thread=None,
-                     #postage_type=None,
                      quality=1):
     """ handle a file upload """
     retorno = None
@@ -158,8 +155,8 @@ def handle_upload_file(file_post=None,
     except: #python2
         random_hex = uuid4().get_hex()
     # Save temp file in /tmp/
-    arquivo_temp = TEMP_FILE_DIR + random_hex
-    with open(arquivo_temp, 'wb') as temp_file:
+    tempo_file = TEMP_FILE_DIR + random_hex
+    with open(tempo_file, 'wb') as temp_file:
         for chunk in file_post.chunks():
             temp_file.write(chunk)
         temp_file.close()
@@ -170,17 +167,17 @@ def handle_upload_file(file_post=None,
     if not extension:
         extension = ''
     # get a md5 from the file, and this will be it's new name
-    md5_hash = md5sum(arquivo_temp)
+    md5_hash = md5sum(tempo_file)
     filename = ''.join([md5_hash, extension])
     # rename temp with extension
-    arquivo_temp_ext = ''.join([arquivo_temp, extension])
-    os.rename(arquivo_temp, arquivo_temp_ext)
-    arquivo_temp = arquivo_temp_ext
+    tempo_file_ext = ''.join([tempo_file, extension])
+    os.rename(tempo_file, tempo_file_ext)
+    tempo_file = tempo_file_ext
     # Here we have a file in /tmp/ with name md5.extension
     mime_type = file_post.content_type
     if not mime_type:
         mime_type = []
-    retorno = handle_generic_file(arquivo_temp,
+    retorno = handle_generic_file(tempo_file,
                                 file_post,
                                 filename,
                                 quality=quality,
@@ -189,7 +186,7 @@ def handle_upload_file(file_post=None,
                                 md5_hash=md5_hash)
     return retorno
 
-def handle_generic_file(arquivo_temp,
+def handle_generic_file(tempo_file,
                         file_post,
                         filename,
                         quality=1,
@@ -208,7 +205,7 @@ def handle_generic_file(arquivo_temp,
     elif 'audio' in mime_type:
         tipo = 'audio'
     elif 'application/octet-stream' in mime_type:
-        tipo = 'gif'
+        tipo = ('gif' if check_if_img(tempo_file) else 'file')
     else:
         tipo = 'file'
     tipos_extensions = {
@@ -232,15 +229,15 @@ def handle_generic_file(arquivo_temp,
     media.content_type = mime_type
     if (('image/gif' in mime_type) or
         ('application/octet-stream' in mime_type)):
-        arruma_gif(arquivo_temp, mime_type)
+        arruma_gif(tempo_file, mime_type)
     elif 'image' in mime_type:
-        convert_tojpeg(arquivo_temp)
-    foto_file = open(arquivo_temp, 'rb')
+        convert_tojpeg(tempo_file)
+    foto_file = open(tempo_file, 'rb')
     media.media_file.save(filename, File(foto_file))
     foto_file.close()
     # extract a thumbnail depending on filetype
     if tipo == 'image': # , 'gif' # we will treat gifs differently
-        thumb_file = open(arquivo_temp, 'rb')
+        thumb_file = open(tempo_file, 'rb')
         media.media_thumbnail.save(thumbname, File(thumb_file))
         thumb_file.close()
         # Crop the imagem of thumbnail
@@ -253,17 +250,17 @@ def handle_generic_file(arquivo_temp,
         get_thumb_from_video(media)
     media.save()
     # Delete temp file
-    os.remove(arquivo_temp)
+    os.remove(tempo_file)
     return media
 
-def arruma_gif(arquivo_temp, mime_type):
+def arruma_gif(tempo_file, mime_type):
     """ fix gifs that came with mime 'application/octet-stream'
     """
     if ('application/octet-stream' in mime_type):
         # se for octet stream, tem q converter ele pra gif
-        os.system('convert '+arquivo_temp+ ' ' + arquivo_temp+'.gif')
-        if os.path.isfile(arquivo_temp+'.gif'):
-            shutil.move(arquivo_temp+'.gif', arquivo_temp)
+        os.system('convert '+tempo_file+ ' ' + tempo_file+'.gif')
+        if os.path.isfile(tempo_file+'.gif'):
+            shutil.move(tempo_file+'.gif', tempo_file)
 
 def get_thumb_from_video(video):
     """ extract thumbnail from videos.
@@ -285,3 +282,12 @@ def get_thumb_from_video(video):
         video.media_thumbnail.save(os.path.basename(video.media_file.name), File(thumb_file))
         thumb_file.close()
         os.remove(thumbnail_temp)
+
+def check_if_img(file_path:str)->bool:
+    """ check if file given by path is an actual IMAGE file
+    """
+    try:
+        media_file = Image.open(file_path)
+    except (UnidentifiedImageError, FileNotFoundError) as e:
+        return False
+    return (len(list(ImageSequence.Iterator(media_file))) > 0)

@@ -31,7 +31,8 @@ class Media(models.Model):
     media_thumbnail = models.FileField(upload_to=choose_upload_media_thumb_to,
                                                     max_length=10485760,
                                                     null=True, blank=True)
-    content_type = models.CharField(max_length=127, null=True, blank=True)
+    content_type = models.CharField(max_length=127, null=True, blank=True,
+                                    default='application/octet-stream')
     orientation = models.CharField(max_length=10, default='portrait')
 
     format_tries = models.IntegerField(default=0)
