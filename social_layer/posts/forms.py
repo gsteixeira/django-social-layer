@@ -40,6 +40,6 @@ class PostForm(forms.ModelForm):
             will be disabled
         """
         if not self.allow_media:
-            raise forms.ValidationError(_('Posting medis is now allowed!'))
+            raise forms.ValidationError(_('Posting media is not allowed!'))
         return self.cleaned_data['media']
         
