@@ -4,5 +4,5 @@
         enctype="multipart/form-data" class="sl-form">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="publish" class="comment-button" />
+    <input type="submit" value="{% trans 'publish' %}" class="comment-button" />
 </form>

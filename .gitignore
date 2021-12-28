@@ -9,4 +9,5 @@ build/
 dist/
 todo.txt
 .coverage
-
+*.html.py
+*.txt.py
