@@ -105,7 +105,7 @@ def get_img_orientation(img_file):
         logger.error(e)
         return 'portrait'
 
-# 65536
+
 def md5sum(filename, blocksize=65536):
     """ Get md5sum from file """
     hashe = hashlib.md5()

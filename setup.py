@@ -40,7 +40,7 @@ setup(
         'Framework :: Django',
         ],
     install_requires=[
-        'Django>=3.0.0',
+        'Django>=2.2.0',
         'Pillow<=8.4.0',
         'opencv-python<=4.5.4.60',
         'django-infinite-scroll>=0.1.7',
