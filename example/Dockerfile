@@ -6,11 +6,11 @@ RUN apt-get update && \
     apt-get install -y build-essential python3-dev python3-pip \
                        ffmpeg libwebp-dev git
     
-RUN pip3 install Django==3.2.10 \
+RUN pip3 install Django==4.0 \
                  uwsgi==2.0.20 \
                  Pillow==8.4.0 \
                  opencv-python==4.5.4.60 \
-                 django-infinite-scroll==0.1.7
+                 django-infinite-scroll
 
 COPY resources/uwsgi.ini /etc/
 
