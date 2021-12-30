@@ -22,20 +22,14 @@ def formata_all_media(Model=None):
             get_thumb_from_video(post)
             if post.media_thumbnail:
                 convert_towebp(post.media_thumbnail.path)
-            post.save()
         elif 'image/gif' in post.content_type:
             cropa_imagem(post.media_thumbnail.path, quality=1)
             convert_towebp(post.media_thumbnail.path)
-            post.formated = True
-            post.save()
         elif 'image/' in post.content_type:
             if post.media_file:
                 cropa_imagem(post.media_file.path, quality=2)
             if post.media_thumbnail:
                 cropa_imagem(post.media_thumbnail.path, quality=1)
                 convert_towebp(post.media_thumbnail.path)
-            post.formated = True
-            post.save()
-        else: # we dont process other kind of files
-            post.formated = True
-            post.save()
+        post.formated = True
+        post.save()
