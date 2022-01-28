@@ -66,7 +66,7 @@ class SocialLayerTestCase(TestCase):
         client.force_login(self.bob)
         section = CommentSection.objects.create(owner=self.alice_sprofile)
         response = client.get(section.get_url())
-        self.assertIn(self.alice.username, str(response.content))
+        self.assertNotIn(self.alice.username, str(response.content))
         post_data = {
             'text': uuid4().hex,
             }
@@ -109,7 +109,7 @@ class SocialLayerTestCase(TestCase):
         client.force_login(self.bob)
         section = CommentSection.objects.create(owner=self.alice_sprofile)
         response = client.get(section.get_url())
-        self.assertIn(self.alice.username, str(response.content))
+        self.assertNotIn(self.alice.username, str(response.content))
         post_data = {
             'text': uuid4().hex,
             }
@@ -138,8 +138,7 @@ class SocialLayerTestCase(TestCase):
         response = client.get(self.alice_sprofile.get_url())
         self.assertIn(self.alice_sprofile.nick, str(response.content))
         self.assertEqual(response.status_code, 200)
-        
-       
+
     def test_setup_profile(self):
         """ check the profile setup page """
         client = Client()
