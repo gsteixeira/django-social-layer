@@ -7,17 +7,7 @@
                 action="{% url 'social_layer:comment_section' comment_section.id %}">
                 {% csrf_token %}
         {% endif %}
-                <a href="{{ comment_section.owner.get_url }}" class="float-right">
-                    {{ comment_section.owner.nick }}
-                    {% if comment_section.owner.picture.media_thumbnail %}
-                        <img src="{{ comment_section.owner.picture.media_thumbnail.url }}"
-                            alt="{{ comment_section.owner.nick }}"
-                            class="comment-user-pic"/>
-                    {% else %}
-                        <i class="fa fa-user gray"></i>
-                    {% endif %}
-                </a>
-<!--                 <label>{% trans 'Comments' %}</label> -->
+                <label>{% trans 'Comments' %}</label>
                 <textarea class="comment-textarea" name="text" id="text" value=""
                     required
                     {% if not request.user.is_authenticated %}

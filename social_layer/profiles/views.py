@@ -39,6 +39,7 @@ def setup_profile(request):
         response = execute_string(alt_setup, request)
         if response:
             return response
+    redir_after = request.COOKIES.get('slogin_next', None)
     if request.method == "POST":
         sprofile.nick = request.POST.get('nick', '')
         sprofile.phrase = request.POST.get('phrase', '')
@@ -53,7 +54,6 @@ def setup_profile(request):
         sprofile.save()
         # TODO handle spam optin
         receive_email = bool(request.POST.get('receive_email', ''))
-        redir_after = request.COOKIES.get('slogin_next', None)
         if redir_after:
             resp = redirect(redir_after)
             resp.delete_cookie('slogin_next')
@@ -63,6 +63,7 @@ def setup_profile(request):
     data = {
         'sprofile': sprofile,
         'did_exist': bool(did_exist),
+        'redir_after': redir_after,
         }
     return render(request, 'social_layer/profiles/setup_profile.html', data)
     

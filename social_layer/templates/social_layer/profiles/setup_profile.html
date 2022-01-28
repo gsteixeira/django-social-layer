@@ -25,5 +25,10 @@
         </div>-->
         <input type="submit" value="{% trans 'save' %}" class="full-width"/>
     </form>
+    {% if redir_after %}
+        <p>
+            <a href="{{ redir_after }}">{% trans 'not now' %}</a>
+        </p>
+    {% endif %}
 
 {% endblock content %}
