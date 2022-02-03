@@ -296,6 +296,7 @@ def check_if_img(file_path:str)->bool:
 def format_media(post):
     """ Format media files. 
     Resize images, extract thumbnails, and shrink videos.
+
     :param post: the media object to be formated.
     :type post: social_layer.mediautils.models.Media
     """
