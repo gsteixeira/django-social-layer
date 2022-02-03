@@ -23,7 +23,7 @@ from social_layer.mediautils.tasks import crop_video_task
 
 logger = logging.getLogger(__name__)
 
-TEMP_FILE_DIR = '/tmp/'
+TEMP_FILE_DIR = '/tmp'
 
 DEFAULT_IMG_WIDTH=480
 DEFAULT_IMG_HEIGHT=360
@@ -165,7 +165,7 @@ def handle_upload_file(file_post=None,
     retorno = None
     # creates a temp file
     random_hex = uuid4().hex
-    tempo_file = f"TEMP_FILE_DIR{random_hex}"
+    tempo_file = f"{TEMP_FILE_DIR}/{random_hex}"
     # Save uploaded file to temporary
     with open(tempo_file, 'wb') as temp_file:
         for chunk in file_post.chunks():
