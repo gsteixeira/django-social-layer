@@ -46,7 +46,7 @@ class Media(models.Model):
         from social_layer.mediautils.utils import get_img_orientation
         super(Media, self).save(*args, **kwargs)
         # Try to guess image orientation
-        if 'image/' in self.content_type:
+        if self.content_type and 'image/' in self.content_type:
             self.orientation = get_img_orientation(self.media_file.path)
         elif self.media_thumbnail:
             self.orientation = get_img_orientation(self.media_thumbnail.path)

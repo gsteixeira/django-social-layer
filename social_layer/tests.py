@@ -33,7 +33,6 @@ from social_layer.profiles.models import SocialProfile
 from social_layer.notifications.models import Notification
 from social_layer.posts.models import Post, PostMedia
 from social_layer.mediautils.tests import small_video, small_image
-from social_layer.tasks import format_medias
 import logging
 
 #@override_settings(LOGGING={})
@@ -99,7 +98,7 @@ class SocialLayerTestCase(TestCase):
                 response = client.post(url, post_data, follow=True)
                 self.assertIn(post_data['text'], str(response.content))
                 messages.append(post_data['text'])
-        response = client.get(section.get_url()+'?show-comments')
+        response = client.get(section.get_url() + '?show-comments')
         for msg in messages:
             self.assertIn(msg, str(response.content))
 
@@ -239,7 +238,6 @@ class SocialLayerTestCase(TestCase):
         url = reverse('social_layer:setup_profile')
         response = client.post(url, post_data, follow=True)
         self.assertEqual(response.status_code, 200)
-        format_medias()
         self.bob_sprofile.refresh_from_db()
         self.assertEqual(self.bob_sprofile.nick, post_data['nick'])
         self.assertEqual(self.bob_sprofile.phrase, post_data['phrase'])
@@ -264,7 +262,6 @@ class SocialLayerTestCase(TestCase):
 
     def test_task_photos(self):
         self.test_set_profile_photo()
-        format_medias()
 
     def test_set_video_as_photo(self):
         """ test setting up a profile picture """
@@ -281,7 +278,6 @@ class SocialLayerTestCase(TestCase):
         response = client.post(url, post_data, follow=True)
         self.assertEqual(response.status_code, 200)
         self.bob_sprofile.refresh_from_db()
-        format_medias()
         self.assertEqual(self.bob_sprofile.nick, post_data['nick'])
         self.assertEqual(self.bob_sprofile.phrase, post_data['phrase'])
         self.assertIsNotNone(self.bob_sprofile.picture())
@@ -335,11 +331,10 @@ class SocialLayerTestCase(TestCase):
         post = Post.objects.all().last()
         self.assertEqual(post.text, post_data['text'])
         self.assertIn(post_data['text'], str(response.content))
-        format_medias()
         self.assertIsNotNone(post.postmedia)
         post_media = post.postmedia
         self.assertIn(post.postmedia.media_thumbnail.url, str(response.content))
-        self.assertIn('.webp', post.postmedia.media_thumbnail.url)
+        self.assertIn('.jpg', post.postmedia.media_thumbnail.url)
         self.assertTrue(os.path.isfile(post.postmedia.media_thumbnail.path))
         # delete_post
         url = reverse('social_layer:delete_post', kwargs={'pk': post.pk})

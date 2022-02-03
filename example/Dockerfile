@@ -10,6 +10,7 @@ RUN pip3 install Django==4.0 \
                  uwsgi==2.0.20 \
                  Pillow==8.4.0 \
                  opencv-python==4.5.4.60 \
+                 celery==5.2.3 \
                  django-infinite-scroll
 
 COPY resources/uwsgi.ini /etc/

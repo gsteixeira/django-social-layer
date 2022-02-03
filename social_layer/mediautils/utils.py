@@ -15,14 +15,25 @@ import logging
 import hashlib
 import traceback
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files import File
 from social_layer.mediautils.models import Media
+from social_layer.mediautils.tasks import crop_video_task
 
-TEMP_FILE_DIR = '/tmp/'
 logger = logging.getLogger(__name__)
 
-def cropa_imagem(img_file, larger=480, smaller=360, quality=1):#3x4 # 
+TEMP_FILE_DIR = '/tmp/'
+
+DEFAULT_IMG_WIDTH=480
+DEFAULT_IMG_HEIGHT=360
+DEFAULT_VIDEO_WIDTH=320
+DEFAULT_VIDEO_HEIGHT=240
+
+def cropa_imagem(img_file,
+                 larger=DEFAULT_IMG_WIDTH,
+                 smaller=DEFAULT_IMG_HEIGHT,
+                 quality=1):
     """ reduce image size """
     larger *= quality
     smaller *= quality
@@ -51,7 +62,10 @@ def cropa_imagem(img_file, larger=480, smaller=360, quality=1):#3x4 #
         logger.error(e)
     return ret
 
-def cropa_video(video_file, larger=320, smaller=240, quality=1):
+def cropa_video(video_file,
+                larger=DEFAULT_VIDEO_WIDTH,
+                smaller=DEFAULT_VIDEO_HEIGHT,
+                quality=1):
     """ reduce video size """
     larger *= quality
     smaller *= quality
@@ -150,78 +164,55 @@ def handle_upload_file(file_post=None,
     """ handle a file upload """
     retorno = None
     # creates a temp file
-    try:
-        random_hex = uuid4().hex
-    except: #python2
-        random_hex = uuid4().get_hex()
-    # Save temp file in /tmp/
-    tempo_file = TEMP_FILE_DIR + random_hex
+    random_hex = uuid4().hex
+    tempo_file = f"TEMP_FILE_DIR{random_hex}"
+    # Save uploaded file to temporary
     with open(tempo_file, 'wb') as temp_file:
         for chunk in file_post.chunks():
             temp_file.write(chunk)
         temp_file.close()
     extension = mimetypes.guess_extension(file_post.content_type, strict=True)
     if extension == 'jpe':
-        # guess_extension eh bugado
         extension = 'jpg'
-    if not extension:
+    elif extension is None:
         extension = ''
     # get a md5 from the file, and this will be it's new name
     md5_hash = md5sum(tempo_file)
-    filename = ''.join([md5_hash, extension])
+    filename = f"{md5_hash}{extension}"
     # rename temp with extension
-    tempo_file_ext = ''.join([tempo_file, extension])
+    tempo_file_ext = f"{tempo_file}{extension}"
     os.rename(tempo_file, tempo_file_ext)
     tempo_file = tempo_file_ext
     # Here we have a file in /tmp/ with name md5.extension
     mime_type = file_post.content_type
     if not mime_type:
         mime_type = []
-    retorno = handle_generic_file(tempo_file,
-                                file_post,
-                                filename,
-                                quality=quality,
-                                Model=Model,
-                                extra_args=extra_args,
-                                md5_hash=md5_hash)
-    return retorno
 
-def handle_generic_file(tempo_file,
-                        file_post,
-                        filename,
-                        quality=1,
-                        Model=Media,
-                        extra_args={},
-                        md5_hash=None):
-    """ handle a generic file uplod and format it accordint to it's needs """
     media = Model(**extra_args)
     mime_type = file_post.content_type
     if 'image/gif' in mime_type:
-        tipo = 'gif'
+        tipe = 'gif'
     elif 'image' in mime_type:
-        tipo = 'image'
+        tipe = 'image'
     elif 'video' in mime_type:
-        tipo = 'video'
+        tipe = 'video'
     elif 'audio' in mime_type:
-        tipo = 'audio'
+        tipe = 'audio'
     elif 'application/octet-stream' in mime_type:
-        tipo = ('gif' if check_if_img(tempo_file) else 'file')
+        tipe = ('gif' if check_if_img(tempo_file) else 'file')
     else:
-        tipo = 'file'
-    tipos_extensions = {
-        'image': ['.jpg', '.webp'],
-        'gif': ['.gif', '.webp'],
+        tipe = 'file'
+    tipes_extensions = {
+        'image': ['.jpg', '.jpg'],
+        'gif': ['.gif', '.jpg'],
         }
-    if tipo in tipos_extensions.keys():
-        mainext, thumbext = tipos_extensions.get(tipo, ['.jpg', '.webp'])
+    if tipe in tipes_extensions.keys():
+        mainext, thumbext = tipes_extensions.get(tipe, ['.jpg', '.jpg'])
         fname_spl = filename.split('.')
         if len(fname_spl) > 0:
             first_name = fname_spl[0]
-            filename = first_name+mainext
-            thumbname = first_name+thumbext
-        else:
-            filename = filename+mainext
-            thumbname = filename+thumbext
+        filename = f"{first_name}{mainext}"
+        thumbname = f"{first_name}{thumbext}"
     else:
         thumbname = filename
     # convert to jpe
@@ -236,18 +227,30 @@ def handle_generic_file(tempo_file,
     media.media_file.save(filename, File(foto_file))
     foto_file.close()
     # extract a thumbnail depending on filetype
-    if tipo == 'image': # , 'gif' # we will treat gifs differently
+    if tipe == 'image': # , 'gif' # we will treat gifs differently
         thumb_file = open(tempo_file, 'rb')
         media.media_thumbnail.save(thumbname, File(thumb_file))
         thumb_file.close()
         # Crop the imagem of thumbnail
+        cropa_imagem(media.media_file.path, quality=2)
         cropa_imagem(media.media_thumbnail.path, quality=quality)
-        convert_towebp(media.media_thumbnail.path)
-    elif tipo == 'gif':
+        convert_tojpeg(media.media_thumbnail.path)
+        media.formated = True
+    elif tipe == 'gif':
         media.media_thumbnail = media.media_file
-    elif tipo == 'video':
+        cropa_imagem(media.media_thumbnail.path, quality=1)
+        convert_tojpeg(media.media_thumbnail.path)
+        media.formated = True
+    elif tipe == 'video':
         media.save()
         get_thumb_from_video(media)
+        # Crop video in a celery task
+        if hasattr(settings, 'CELERY_BROKER_URL'):
+            try:
+                crop_video_task.delay(media.media_file.path)
+            except ConnectionRefusedError:
+                logger.error("Could not connect to CELERY_BROKER_URL")
+        media.formated = True
     media.save()
     # Delete temp file
     os.remove(tempo_file)
@@ -266,10 +269,7 @@ def get_thumb_from_video(video):
     """ extract thumbnail from videos.
     requires ffmpeg
     """
-    try:
-        random_hex = uuid4().hex
-    except: #python2
-        random_hex = uuid4().get_hex()
+    random_hex = uuid4().hex
     thumbnail_temp = '/tmp/'+random_hex+'.jpg'
     cmd = ('/usr/bin/ffmpeg -hide_banner -loglevel panic -y -ss 0 -i '
                 + video.media_file.path
@@ -291,3 +291,41 @@ def check_if_img(file_path:str)->bool:
     except (UnidentifiedImageError, FileNotFoundError) as e:
         return False
     return (len(list(ImageSequence.Iterator(media_file))) > 0)
+
+
+def format_media(post):
+    """ Format media files. 
+    Resize images, extract thumbnails, and shrink videos.
+    :param post: the media object to be formated.
+    :type post: social_layer.mediautils.models.Media
+    """
+    if post.content_type:
+        if 'video/' in post.content_type:
+            post.formated = cropa_video(post.media_file.path,
+                                        larger=wsize, smaller=hsize)
+            # reconnect because we probably have a timeout
+            connection.connection.close()
+            connection.connection = None
+            get_thumb_from_video(post)
+            if post.media_thumbnail:
+                convert_tojpeg(post.media_thumbnail.path)
+        elif 'image/gif' in post.content_type:
+            cropa_imagem(post.media_thumbnail.path, quality=1)
+            convert_tojpeg(post.media_thumbnail.path)
+        elif 'image/' in post.content_type:
+            has_media = (post.media_file and os.path.isfile(post.media_file.path))
+            has_thumb = (post.media_thumbnail and os.path.isfile(post.media_thumbnail.path))
+            if (not has_media and not has_thumb):
+                post.delete()
+                return
+            elif (has_media and not has_thumb):
+                post.media_thumbnail = post.media_file
+                post.save()
+            elif (has_thumb and not has_media):
+                post.media_file = post.media_thumbnail
+                post.save()
+            cropa_imagem(post.media_file.path, quality=2)
+            cropa_imagem(post.media_thumbnail.path, quality=1)
+            convert_tojpeg(post.media_thumbnail.path)
+    post.formated = True
+    post.save()

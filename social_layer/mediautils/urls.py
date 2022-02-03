@@ -9,5 +9,5 @@ from mediautils.views import del_photo
 
 
 urlpatterns = [
-    url(r'^del-photo/(?P<pk>\d+)/$', mediautils.views.del_photo, name='del_photo'),
+    path('del-photo/<int:pk>/', mediautils.views.del_photo, name='del_photo'),
     ]

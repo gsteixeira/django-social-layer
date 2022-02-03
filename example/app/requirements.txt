@@ -1,5 +1,6 @@
-Django>==3.2.10
+Django==4.0.2
 uwsgi>==2.0.20
-Pillow>==8.4.0
-opencv-python>==4.5.4.60
-django-infinite-scroll>==0.1.7
+Pillow==8.4.0
+opencv-python==4.5.4.60
+django-infinite-scroll==0.1.7
+celery==5.2.3
