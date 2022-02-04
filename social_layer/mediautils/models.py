@@ -1,4 +1,6 @@
 import os
+from uuid import uuid4
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -13,15 +15,33 @@ def _choose_upload_media_to(instance, filename, dir_prefix):
     name = dir_prefix + filepath
     return name
 
+def get_a_name(old_name:str):
+    """ generate a new random name with the same old extension
+    :param old_name: the old name, where we get the extension.
+    :type old_name: str
+    """
+    base, ext = os.path.splitext(old_name)
+    return f"{uuid4().hex}.{ext}"
 
 def choose_upload_media_to(instance, filename):
-    """ where to upload the main file """
-    return _choose_upload_media_to(instance, filename, 'files/sl/')
-
+    """ where to upload the main file.
+    Generates a new random name.
+    """
+    prefix_dir=getattr(settings, 'SOCIAL_LAYER_DIRPREFIX', 'sl/')
+    newname = get_a_name(filename)
+    return _choose_upload_media_to(instance, newname, prefix_dir)
 
 def choose_upload_media_thumb_to(instance, filename):
-    """ where to upload the thumbnail file """
-    return _choose_upload_media_to(instance, filename, 'files/sl/thumbs/')
+    """ where to upload the thumbnail file
+    Uses the same Generates a new random name.
+    """
+    prefix_dir=getattr(settings, 'SOCIAL_LAYER_DIRPREFIX', 'sl/')
+    if instance.media_file:
+        newname = os.path.basename(instance.media_file.name)
+    else:
+        newname = get_a_name(filename)
+    return _choose_upload_media_to(instance, newname, f"{prefix_dir}thumbs/")
+
 
 
 class Media(models.Model):
