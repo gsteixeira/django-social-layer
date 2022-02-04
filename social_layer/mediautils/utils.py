@@ -203,6 +203,7 @@ def shrink_and_thumbs(media:Media):
         # unless is a gif, crop the image
         if not is_gif(media):
             crop_image(media.media_file.path, quality=2)
+            convert_tojpeg(media.media_file.path)
         media = rename_extension(media, extension=DEFAULT_EXTENSION)
     elif "video/" in media.content_type:
         get_thumb_from_video(media)
@@ -220,13 +221,15 @@ def rename_extension(media:Media, extension:str=DEFAULT_EXTENSION)->Media:
     for field in ("media_file", "media_thumbnail"):
         old_path = getattr(media, field).path
         old_base = os.path.basename(old_path)
-        dir_name = os.path.dirname(old_path)
+        old_rel_path = os.path.dirname(getattr(media, field).name)
+        dir_path_name = os.path.dirname(old_path)
         base, ext = os.path.splitext(old_base)
         # Make a new name.jpg
         new_name = f"{base}.{extension}"
-        new_path = f"{dir_name}{new_name}"
+        new_path = f"{dir_path_name}{new_name}"
+        new_rel_path = f"{old_rel_path}{new_name}"
         os.rename(getattr(media, field).path, new_path)
-        setattr(getattr(media, field), "name", new_path)
+        setattr(getattr(media, field), "name", new_rel_path)
         media.save()
     return media
 
