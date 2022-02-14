@@ -211,8 +211,8 @@ def shrink_and_thumbs(media:Media):
         if hasattr(settings, 'CELERY_BROKER_URL'):
             try:
                 crop_video_task.delay(media.media_file.path)
-            except ConnectionRefusedError:
-                logger.error("Could not connect to CELERY_BROKER_URL")
+            except Exception as err:
+                logger.error(f"Could not connect to CELERY_BROKER_URL {err}")
     media.save()
 
 
