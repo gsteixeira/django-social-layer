@@ -18,8 +18,8 @@ from django.contrib import admin
 # Register your models here.
 from social_layer.comments.models import Comment, CommentSection, LikeComment
 from social_layer.notifications.models import Notification
-from social_layer.profiles.models import SocialProfile, SocialProfilePhoto
 from social_layer.posts.models import Post, PostMedia
+from social_layer.profiles.models import SocialProfile, SocialProfilePhoto
 
 admin.site.register(SocialProfile)
 admin.site.register(SocialProfilePhoto)

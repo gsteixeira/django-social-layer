@@ -48,7 +48,7 @@
         {% else %}
             <div id="rt_form_{{comment.id}}" style="display: none"></div>
         {% endif %}
-        
+
         {% if not comment_section.featured and request.user == comment.author.user or request.user.is_superuser %}
             <a href="{% url 'social_layer:delete_comment' comment.id %}"
                 rel="nofollow" class="float-right"

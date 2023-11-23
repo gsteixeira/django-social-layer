@@ -12,7 +12,7 @@
         {% csrf_token %}
         <label for="nick_id">{% trans 'Nick' %}</label>
         <input type="text" name="nick" id="nick_id" value="{{ sprofile.nick|default:'' }}" class="full-width"/>
-        
+
         <label for="picture_id">{% trans 'Select a picture' %}</label>
         <input type="file" name="picture" id="picture_id" class="full-width"/>
         {% if did_exist %}

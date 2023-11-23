@@ -17,13 +17,7 @@ from django.apps import AppConfig
 
 
 class SocialLayerConfig(AppConfig):
-    name = 'social_layer'
- 
+    name = "social_layer"
+
     def ready(self):
-        from social_layer import notifications
-        from social_layer import comments
-        from social_layer import profiles
-        from social_layer import posts
-        from social_layer import signals
-        
-        
+        from social_layer import comments, notifications, posts, profiles, signals

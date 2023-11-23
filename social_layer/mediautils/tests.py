@@ -1,13 +1,15 @@
-from django.test import TestCase
-
 import os
 from base64 import b64decode
 from uuid import uuid4
-from social_layer.mediautils.utils import get_img_orientation, check_if_img
+
+from django.test import TestCase
+
+from social_layer.mediautils.utils import check_if_img, get_img_orientation
+
 
 class MediaUtilsTestCase(TestCase):
     def setUp(self):
-        self.dummy_file = '/tmp/{}'.format(uuid4().hex)
+        self.dummy_file = "/tmp/{}".format(uuid4().hex)
 
     def tearDown(self):
         try:
@@ -16,30 +18,30 @@ class MediaUtilsTestCase(TestCase):
             pass
 
     def test_get_img_orientation_landscape(self):
-        """ test detection of a landscape image """
-        with open(self.dummy_file, 'bw') as f:
+        """test detection of a landscape image"""
+        with open(self.dummy_file, "bw") as f:
             f.write(b64decode(landscape))
         orient = get_img_orientation(self.dummy_file)
-        self.assertEqual(orient, 'landscape')
+        self.assertEqual(orient, "landscape")
 
     def test_get_img_orientation_portrait(self):
-        """ test detection of a portrait image """
-        with open(self.dummy_file, 'bw') as f:
+        """test detection of a portrait image"""
+        with open(self.dummy_file, "bw") as f:
             f.write(b64decode(portrait))
         orient = get_img_orientation(self.dummy_file)
-        self.assertEqual(orient, 'portrait')
+        self.assertEqual(orient, "portrait")
 
     def test_check_if_img(self):
-        """ unitary test for function that checks if file is image """
-        with open(self.dummy_file, 'bw') as f:
+        """unitary test for function that checks if file is image"""
+        with open(self.dummy_file, "bw") as f:
             f.write(b64decode(portrait))
         self.assertTrue(check_if_img(self.dummy_file))
         # now with a negative
-        with open(self.dummy_file, 'bw') as f:
-            f.write(b'garbage')
+        with open(self.dummy_file, "bw") as f:
+            f.write(b"garbage")
         self.assertFalse(check_if_img(self.dummy_file))
         # A Gif file
-        with open(self.dummy_file, 'bw') as f:
+        with open(self.dummy_file, "bw") as f:
             f.write(b64decode(small_gif))
         self.assertTrue(check_if_img(self.dummy_file))
 

@@ -13,25 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls.static import static
-from django.conf import settings
-from django.contrib import admin
-from django.urls import path, include
 import core
 from core import views
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    path('accounts/profile/', RedirectView.as_view(url='/', permanent=False)),
-    path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-
-    path('', core.views.home_page, name='home_page'),
-    path('second-page/', core.views.second_page, name='second_page'),
-    path('register/', core.views.register, name='register'),
-
-    path('', include(('social_layer.urls', 'social_layer'),
-                     namespace="social_layer")),
+    path("accounts/profile/", RedirectView.as_view(url="/", permanent=False)),
+    path("admin/", admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("", core.views.home_page, name="home_page"),
+    path("second-page/", core.views.second_page, name="second_page"),
+    path("register/", core.views.register, name="register"),
+    path("", include(("social_layer.urls", "social_layer"), namespace="social_layer")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

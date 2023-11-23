@@ -16,27 +16,32 @@
 from django.db import models
 from django.utils import timezone
 
+
 class LikableObject(models.Model):
-    """ An object that people might hit a like button on
+    """An object that people might hit a like button on
     Used by Comment and CommentSection
     """
+
     count_replies = models.PositiveIntegerField(default=0)
     count_likes = models.PositiveIntegerField(default=0)
     count_dislikes = models.PositiveIntegerField(default=0)
 
-    class Meta():
+    class Meta:
         abstract = True
 
 
 class Like(models.Model):
-    """ an object that records when someone hits the Like button. It also
+    """an object that records when someone hits the Like button. It also
     represents the Dislike action.
     """
-    user = models.ForeignKey('auth.User',
-                             related_name='likecomment_user_%(class)ss',
-                             on_delete=models.CASCADE)
+
+    user = models.ForeignKey(
+        "auth.User",
+        related_name="likecomment_user_%(class)ss",
+        on_delete=models.CASCADE,
+    )
     like = models.BooleanField(default=True)
     date_time = models.DateTimeField(default=timezone.localtime)
 
-    class Meta():
+    class Meta:
         abstract = True
