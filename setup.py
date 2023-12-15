@@ -47,7 +47,6 @@ setup(
         "opencv-python>=4.5.5.64",
         "django-infinite-scroll>=0.1.7",
         "celery>=5.2.3",
-        "numpy>=1.26.2",
     ],
     package_data={
         "social_layer": [
