@@ -20,4 +20,10 @@ class SocialLayerConfig(AppConfig):
     name = "social_layer"
 
     def ready(self):
-        from social_layer import comments, notifications, posts, profiles, signals
+        from social_layer import (  # noqa F401
+            comments,
+            notifications,
+            posts,
+            profiles,
+            signals,
+        )

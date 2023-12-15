@@ -1,12 +1,8 @@
-import os
-from uuid import uuid4
-
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
 
-# Create your views here.
 from social_layer.mediautils.models import Media
 from social_layer.mediautils.utils import rotate_image
 
@@ -35,7 +31,6 @@ def mediautils_rotate_photo(request, pk, direct="left", MediaModel=Media):
         raise Http404()
     for field in ["media_file", "media_thumbnail"]:
         file_field = getattr(media, field, None)
-        orig_name = file_field.name
         img_file = file_field.path
         rotate_image(img_file, direct)
     return media

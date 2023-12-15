@@ -2,7 +2,6 @@
 // Reply to a comment
 function reply_to(comment_id){
     var form_name = 'rt_form_'+comment_id;
-    console.log(form_name);
     var forms = document.getElementsByTagName('form');
     for (i=0; i<forms.length; i++){
         if (forms[i].id.indexOf('rt_form_') > -1){

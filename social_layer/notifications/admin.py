@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
-from social_layer.notifications.models import *
+from social_layer.notifications.models import Notification
 
 admin.site.register(Notification)

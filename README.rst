@@ -33,7 +33,7 @@ add to settings.py:
 
        INSTALLED_APPS = [
            # ...
-           'social_layer.apps.SocialLayerConfig',
+           'social_layer',
            'infscroll', # required
        ]
 
@@ -67,9 +67,10 @@ Now inside a view, lets add a commennt section for the page:
     from social_layer.comments.models import CommentSection
     def my_view(request):
         # in this example, we'll use the url to match the page.
-        cmt_section, n  = CommentSection.objects.get_or_create(url=request.path)
-        return render(request, 'my_view.html',
-                      {'comment_section': cmt_section})
+        comment_section, n  = CommentSection.objects.get_or_create(url=request.path)
+        context = {'commentsection': comment_section}
+        return render(request, 'my_view.html', context)
+
 
 To finish, add this to the template:
 

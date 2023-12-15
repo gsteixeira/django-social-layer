@@ -1,6 +1,3 @@
-# from django.db import models
-import uuid
-
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -9,7 +6,6 @@ from django.utils import timezone
 from social_layer.models import LikableObject, Like
 
 
-### Comments
 class CommentSection(LikableObject):
     """A comment section can be added to any page.
     It optionally is tied to a url. But also can be refered by its id.
@@ -42,7 +38,12 @@ class CommentSection(LikableObject):
         if self.url:
             return self.url
         else:
-            return reverse("social_layer:comment_section", kwargs={"pk": self.pk})
+            return reverse(
+                "social_layer:comments:comment_section", kwargs={"pk": self.pk}
+            )
+
+    def get_absolute_url(self):
+        return self.get_url()
 
     def get_comments(self):
         """return comments from this comment section
@@ -135,6 +136,9 @@ class Comment(LikableObject):
         ).count()
         self.count_replies = Comment.objects.filter(reply_to=self).count()
         self.save()
+
+    def get_absolute_url(self):
+        return self.comment_section.get_absolute_url()
 
 
 class LikeComment(Like):

@@ -14,7 +14,7 @@ def home_page(request):
         request,
         "example/home_page.html",
         {
-            "comment_section": comments,
+            "commentsection": comments,
         },
     )
 
@@ -26,7 +26,7 @@ def second_page(request):
         request,
         "example/second_page.html",
         {
-            "comment_section": comments,
+            "commentsection": comments,
         },
     )
 

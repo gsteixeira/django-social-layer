@@ -40,9 +40,12 @@ class Post(models.Model):
         """get the url of this post"""
         if self._cached_get_url is None:
             self._cached_get_url = reverse(
-                "social_layer:view_post", kwargs={"pk": self.pk}
+                "social_layer:posts:view_post", kwargs={"pk": self.pk}
             )
         return self._cached_get_url
+
+    def get_absolute_url(self):
+        return self.get_url()
 
 
 class PostMedia(Media):

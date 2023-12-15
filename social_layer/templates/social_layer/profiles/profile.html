@@ -22,13 +22,13 @@
 {% block content %}
     {% include 'social_layer/profiles/local_profile_top.html' %}
     {% if request.user.is_staff %}
-        <a href="{% url 'social_layer:admin_send_notification' sprofile.user.pk %}">
+        <a href="{% url 'social_layer:notifications:admin_send_notification' sprofile.user.pk %}">
             {% trans 'send notification' %}
         </a>
         <br>
     {% endif %}
     {% if request.user == sprofile.user %}
-        <a href="{% url 'social_layer:setup_profile' %}" rel="nofollow" class="float-right">
+        <a href="{% url 'social_layer:profiles:setup_profile' %}" rel="nofollow" class="float-right">
             {% trans 'edit' %}
         </a>
         <br>

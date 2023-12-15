@@ -26,10 +26,10 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name="django-social-layer",
-    version="0.3.5",
+    version="1.0.1",
     packages=find_packages(),
     include_package_data=True,
-    license="GNU License",  # example license
+    license="GNU License",
     description="Adds social media features to any website",
     long_description=README,
     long_description_content_type="text/x-rst",
@@ -47,6 +47,7 @@ setup(
         "opencv-python>=4.5.5.64",
         "django-infinite-scroll>=0.1.7",
         "celery>=5.2.3",
+        "numpy>=1.26.2",
     ],
     package_data={
         "social_layer": [

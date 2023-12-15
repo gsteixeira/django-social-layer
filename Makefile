@@ -18,3 +18,4 @@ lint:
 	find ./ -name "*.html" -type f -exec sed -i 's/ \+$$//g' {} \;
 	isort --profile black .
 	black .
+	flake8 --ignore=E501,W503,E203 ./social_layer/ ./example/

@@ -1,10 +1,10 @@
 
 {% load i18n %}
-{% if comment_section %}
+{% if commentsection %}
     <div class="comments-container">
         {% if request.user.is_authenticated %}
             <form method="POST"
-                action="{% url 'social_layer:comment_section' comment_section.id %}">
+                action="{% url 'social_layer:comments:comment_section' commentsection.id %}">
                 {% csrf_token %}
         {% endif %}
                 <label>{% trans 'Comments' %}</label>
@@ -23,11 +23,11 @@
                 {% trans 'login or register to post comments' %}
             </a>
         {% endif %}
-        {% for comment in comment_section.get_comments %}
+        {% for comment in commentsection.get_comments %}
             {% include 'social_layer/comments/render_comment.html' %}
         {% endfor %}
         {% include 'social_layer/comments/reply_mod.html' %}
-        {% if comment_section.featured and comment_section.get_comments > 3 %}
+        {% if commentsection.featured and commentsection.get_comments > 3 %}
             <a href="?show-comments">{% trans 'show more comments' %}</a>
         {% endif %}
     </div>

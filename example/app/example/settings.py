@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     #
-    "social_layer.apps.SocialLayerConfig",
+    "social_layer",
     "infscroll",
     #
     "core",

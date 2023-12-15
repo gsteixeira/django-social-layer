@@ -1,0 +1,11 @@
+{% extends 'social_layer/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <p>{% trans 'Are you sure you want to delete the' %} {% trans 'post' %}?</p>
+    {{ form }}
+    <input type="submit" value="Confirm">
+</form>
+{% endblock content %}

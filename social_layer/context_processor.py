@@ -13,7 +13,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with django-social-layer. If not, see <http://www.gnu.org/licenses/>.
 
-from social_layer.notifications.models import Notification
 from social_layer.notifications.views import get_notifications
 
 

@@ -44,3 +44,18 @@ class PostForm(forms.ModelForm):
         if not self.allow_media:
             raise forms.ValidationError(_("Posting media is not allowed!"))
         return self.cleaned_data["media"]
+
+    def save(self, commit=True):
+        """Save post and if media file is sent along, save it as a media obj"""
+        instance = super().save(commit=False)
+        if commit:
+            instance.save()
+            if self.allow_media and self.cleaned_data["media"]:
+                handle_upload_file(
+                    file_post=self.cleaned_data["media"],
+                    quality=1,
+                    Model=PostMedia,
+                    extra_args={"post": self.instance},
+                )
+
+        return instance

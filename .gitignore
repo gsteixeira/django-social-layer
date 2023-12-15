@@ -11,3 +11,4 @@ todo.txt
 .coverage
 *.html.py
 *.txt.py
+.coverage

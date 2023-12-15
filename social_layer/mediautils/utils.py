@@ -8,21 +8,15 @@ Sorry for the mess.
 """
 
 import hashlib
-import json
 import logging
-import mimetypes
 import os
-import random
 import shutil
-import sys
-import traceback
 from uuid import uuid4
 
 import cv2
 from django.conf import settings
 from django.core.files import File
-from django.core.files.base import ContentFile
-from PIL import Image, ImageDraw, ImageFont, ImageSequence, UnidentifiedImageError
+from PIL import Image, ImageSequence, UnidentifiedImageError
 
 #
 from social_layer.mediautils.models import Media
@@ -190,6 +184,7 @@ def handle_upload_file(file_post=None, Model=None, extra_args={}, quality=1):
         or media.content_type == "application/octet-stream"
     ):
         shrink_and_thumbs(media)
+    return media
 
 
 def shrink_and_thumbs(media: Media):
@@ -268,7 +263,7 @@ def check_if_img(file_path: str) -> bool:
     """check if file given by path is an actual IMAGE file"""
     try:
         media_file = Image.open(file_path)
-    except (UnidentifiedImageError, FileNotFoundError) as e:
+    except (UnidentifiedImageError, FileNotFoundError):
         return False
     return len(list(ImageSequence.Iterator(media_file))) > 0
 
@@ -291,45 +286,3 @@ def fix_gif(tempo_file: str, mime_type: str):
         os.system(f"convert {tempo_file} {gif_name}")
         if os.path.isfile(gif_name):
             shutil.move(gif_name, tempo_file)
-
-
-def format_media(post: Media):
-    """Format media files.
-    Resize images, extract thumbnails, and shrink videos.
-    :param post: the media object to be formated.
-    :type post: social_layer.mediautils.models.Media
-    This is due to be DEPRECATED in a next version.
-    """
-    if post.content_type:
-        if "video/" in post.content_type:
-            post.formated = crop_video(
-                post.media_file.path, larger=wsize, smaller=hsize
-            )
-            # reconnect because we probably have a timeout
-            connection.connection.close()
-            connection.connection = None
-            get_thumb_from_video(post)
-            if post.media_thumbnail:
-                convert_tojpeg(post.media_thumbnail.path)
-        elif "image/gif" in post.content_type:
-            crop_image(post.media_thumbnail.path, quality=1)
-            convert_tojpeg(post.media_thumbnail.path)
-        elif "image/" in post.content_type:
-            has_media = post.media_file and os.path.isfile(post.media_file.path)
-            has_thumb = post.media_thumbnail and os.path.isfile(
-                post.media_thumbnail.path
-            )
-            if not has_media and not has_thumb:
-                post.delete()
-                return
-            elif has_media and not has_thumb:
-                post.media_thumbnail = post.media_file
-                post.save()
-            elif has_thumb and not has_media:
-                post.media_file = post.media_thumbnail
-                post.save()
-            crop_image(post.media_file.path, quality=2)
-            crop_image(post.media_thumbnail.path, quality=1)
-            convert_tojpeg(post.media_thumbnail.path)
-    post.formated = True
-    post.save()

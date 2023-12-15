@@ -15,14 +15,13 @@
 
 from importlib import import_module
 
-from social_layer.profiles.models import SocialProfile, SocialProfilePhoto
+from social_layer.profiles.models import SocialProfile
 
 
 def get_social_profile_byuser(user):
     """returns a SocialProfile object given an user"""
-    sprofile = SocialProfile.objects.filter(user=user).first()
-    if not sprofile:
-        sprofile = SocialProfile.objects.create(user=user)
+
+    sprofile, new = SocialProfile.objects.get_or_create(user=user)
     return sprofile
 
 

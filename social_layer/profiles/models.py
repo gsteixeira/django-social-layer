@@ -48,7 +48,7 @@ class SocialProfile(models.Model):
 
     def get_url(self):
         """get the url to the profilepage"""
-        return reverse("social_layer:view_profile", kwargs={"pk": self.pk})
+        return reverse("social_layer:profiles:view_profile", kwargs={"pk": self.pk})
 
 
 class SocialProfilePhoto(Media):
