@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
-from social_layer.profiles.models import *
+from social_layer.profiles.models import SocialProfile, SocialProfilePhoto
 
 admin.site.register(SocialProfile)
+admin.site.register(SocialProfilePhoto)

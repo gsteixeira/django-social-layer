@@ -13,16 +13,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with django-social-layer. If not, see <http://www.gnu.org/licenses/>.
 
-from social_layer.notifications.models import Notification
 from social_layer.notifications.views import get_notifications
 
+
 def social_layer_data(request):
-    """ currently only gets a count of unread notifications.
+    """currently only gets a count of unread notifications.
     Used to show in every page "You have unread notif..."
     """
     notifs = get_notifications(request)
     data = {
-        'notif_count': notifs.count(),
-        }
+        "notif_count": notifs.count(),
+    }
     return data
-

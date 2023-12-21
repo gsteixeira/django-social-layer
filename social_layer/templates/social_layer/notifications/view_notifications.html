@@ -22,8 +22,8 @@
 <div class="container">
     <h1>{% trans 'Notifications' %}</h1>
     <div class="full-width">
-        {% if list_notif %}
-            {% for notif in list_notif %}
+        {% if object_list %}
+            {% for notif in object_list %}
                 <div class="notification {% if not notif.read %}unread{% endif %}">
                     {{ notif.date_time }}<br>
                     {{ notif.text|safe }}

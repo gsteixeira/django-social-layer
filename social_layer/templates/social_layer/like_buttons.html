@@ -2,11 +2,11 @@
 
 <div class="full-width sl-likes">
 {% with comment_section as cs %}
-    <a href="javascript:sl_like('{% url 'social_layer:like_post' cs.pk 'like' %}?ajx', 'like_{{cs.id}}');" >
+    <a href="javascript:sl_like('{% url 'social_layer:posts:like_post' cs.pk 'like' %}?ajx', 'like_{{cs.id}}');" >
         <span id="like_{{ cs.pk }}" >{{ cs.count_likes|default:'' }}</span>
         <i class="fas fa-thumbs-up"></i>
     </a>
-    <a href="javascript:sl_like('{% url 'social_layer:like_post' cs.pk 'dislike' %}', 'dislike_{{cs.id}}');" >
+    <a href="javascript:sl_like('{% url 'social_layer:posts:like_post' cs.pk 'dislike' %}', 'dislike_{{cs.id}}');" >
         <span id="dislike_{{ cs.pk }}" >{{ cs.count_dislikes|default:'' }}</span>
         <i class="fas fa-thumbs-down"></i>
     </a>

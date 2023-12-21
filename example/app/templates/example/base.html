@@ -4,10 +4,10 @@
     <head>
         {% block header %}
             <!-- necessary for the like buttons, etc -->
-            <link rel="stylesheet" 
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" 
+            <link rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
                 crossorigin="anonymous" referrerpolicy="no-referrer" />
-            
+
             <!-- load social layer's required resources -->
             <script defer application="javascript" src="{% static 'social_layer/js/social_layer.js' %}"></script>
             <link rel="stylesheet" href="{% static 'social_layer/css/social_layer.css' %}"/>
@@ -32,7 +32,7 @@
             </style>
         {% endblock header %}
     </head>
-    
+
     <body>
         <div class="container">
             {% block content %}

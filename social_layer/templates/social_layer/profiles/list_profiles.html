@@ -9,7 +9,25 @@
 {% block content %}
 
     <h1>{% trans 'Community' %}</h1>
-    {% for sprofile in list_profiles %}
+    {% for sprofile in object_list %}
         {% include 'social_layer/profiles/card.html' %}
     {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; {% trans 'first' %}</a>
+                <a href="?page={{ page_obj.previous_page_number }}">{% trans 'previous' %}</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} {% trans 'of' %} {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">{% trans 'next' %}</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">{% trans 'last' %} &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 {% endblock content %}

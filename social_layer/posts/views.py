@@ -1,68 +1,67 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse, reverse_lazy
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, FormView
+from django.views.generic.list import ListView
 from infscroll.utils import get_pagination
 from infscroll.views import more_items
 
+from social_layer.comments.models import CommentSection, LikePost
+from social_layer.comments.views import like_action
 from social_layer.posts.forms import PostForm
-from social_layer.posts.models import Post, PostMedia
-from social_layer.utils import get_social_profile
-from social_layer.mediautils.utils import handle_upload_file
+from social_layer.posts.mixins import OwnedByUser
+from social_layer.posts.models import Post
 
 
-def new_post(request):
-    """ manages the creation of new user generated content """
-    if not request.user.is_authenticated:
-        return redirect(reverse('social_layer:social_login'))
-    if request.method == "POST":
-        form = PostForm(request.POST, request.FILES,
-                        initial={'owner': request.user})
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.owner = get_social_profile(request)
-            post.save()
-            if (form.allow_media and len(request.FILES) > 0):
-                media = handle_upload_file(file_post=request.FILES.get('media'),
-                                            quality=1,
-                                            Model=PostMedia,
-                                            extra_args={'post': post})
-            return redirect(reverse('social_layer:posts_feed'))
-    else:
-        form = PostForm()
-    return render(request, 'social_layer/posts/new_post.html', {'form': form,})
+class PostView(LoginRequiredMixin, CreateView, FormView):
+    """manages the creation of new user generated content"""
+
+    template_name = "social_layer/posts/new_post.html"
+    form_class = PostForm
+
+    def form_valid(self, form):
+        form.instance.owner = getattr(self.request.user, "socialprofile", None)
+        return super().form_valid(form)
 
 
-def posts_feed(request):
-    """ The main list of posts """
-    post_list = Post.objects.all().order_by('-id')
-    paginated = get_pagination(request, post_list)
-    data = {
-        'more_posts_url': reverse('social_layer:more_posts'),
-        'form': PostForm(),
-        }
-    data.update(paginated)
-    return render(request, 'social_layer/posts/posts_feed.html', data)
+class PostDetailView(DetailView):
+    template_name = "social_layer/posts/view_post.html"
+    model = Post
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["commentsection"] = self.get_object().comments
+        return context
+
+
+class DeletePost(OwnedByUser, DeleteView):
+    model = Post
+    success_url = reverse_lazy("social_layer:posts:posts_feed")
+
+
+class PostsFeedView(ListView, FormView):
+    template_name = "social_layer/posts/posts_feed.html"
+    model = Post
+    form_class = PostForm
+    ordering = ['-date_time']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["more_posts_url"] = reverse("social_layer:posts:more_posts")
+        paginated_data = get_pagination(self.request, context["object_list"])
+        context.update(paginated_data)
+        return context
+
 
 def more_posts(request):
-    """ dynamic load posts using the django-infinite-scroll module.
-    """
-    post_list = Post.objects.all().order_by('-id')
-    return more_items(request, post_list,
-                      template='social_layer/posts/more_posts.html')
-
-def view_post(request, pk, template='social_layer/posts/view_post.html'):
-    """ The main list of posts """
-    post = get_object_or_404(Post, pk=pk)
-    data = {
-        'post': post,
-        'comment_section': post.comments,
-        }
-    return render(request, template, data)
+    """dynamic load posts using the django-infinite-scroll module."""
+    post_list = Post.objects.all().order_by("-id")
+    return more_items(request, post_list, template="social_layer/posts/more_posts.html")
 
 
-def delete_post(request, pk):
-    """ The main list of posts """
-    post = get_object_or_404(Post, pk=pk, owner__user=request.user)
-    post.delete()
-    return redirect(reverse('social_layer:posts_feed'))
+@login_required
+def like_post(request, pk, didlike):
+    """when someone likes a comment_section (aka a post)"""
+    return like_action(request, pk, didlike, CommentSection, LikePost)
+

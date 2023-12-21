@@ -15,39 +15,42 @@
 #
 
 import os
+
 from setuptools import find_packages, setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+with open(os.path.join(os.path.dirname(__file__), "README.rst")) as readme:
     README = readme.read()
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='django-social-layer',
-    version='0.3.5',
+    name="django-social-layer",
+    version="1.0.1",
     packages=find_packages(),
     include_package_data=True,
-    license='GNU License',  # example license
-    description='Adds social media features to any website',
+    license="GNU License",
+    description="Adds social media features to any website",
     long_description=README,
-    long_description_content_type='text/x-rst',
-    url='https://github.com/gsteixeira',
-    author='Gustavo Selbach Teixeira',
-    author_email='gsteixei@gmail.com',
+    long_description_content_type="text/x-rst",
+    url="https://github.com/gsteixeira",
+    author="Gustavo Selbach Teixeira",
+    author_email="gsteixei@gmail.com",
     zip_safe=False,
     classifiers=[
-        'Environment :: Web Environment',
-        'Framework :: Django',
-        ],
+        "Environment :: Web Environment",
+        "Framework :: Django",
+    ],
     install_requires=[
-        'Django>=2.2.0',
-        'Pillow>=8.4.0',
-        'opencv-python>=4.5.5.64',
-        'django-infinite-scroll>=0.1.7',
-        'celery>=5.2.3',
-        ],
+        "Django>=2.2.0",
+        "Pillow>=8.4.0",
+        "opencv-python>=4.5.5.64",
+        "django-infinite-scroll>=0.1.7",
+        "celery>=5.2.3",
+    ],
     package_data={
-        'social_layer': ['social_layer/migrations/*',]
-        },
+        "social_layer": [
+            "social_layer/migrations/*",
+        ]
+    },
 )
