@@ -44,7 +44,7 @@ class PostsFeedView(ListView, FormView):
     template_name = "social_layer/posts/posts_feed.html"
     model = Post
     form_class = PostForm
-    ordering = ['-date_time']
+    ordering = ["-date_time"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,4 +64,3 @@ def more_posts(request):
 def like_post(request, pk, didlike):
     """when someone likes a comment_section (aka a post)"""
     return like_action(request, pk, didlike, CommentSection, LikePost)
-
