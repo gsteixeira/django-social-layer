@@ -11,13 +11,6 @@ services:
         ports:
             - "8000:8000"
         image: django-social-layer:latest
-
-    dsl_formatmedias:
-        volumes:
-            - sociallayer_media:/opt/example/media/
-            - sociallayer_db:/opt/example/db/
-        image: django-social-layer:latest
-        entrypoint: python3 manage.py sl_format_media --daemon
         
 volumes:
     sociallayer_media:
